@@ -32,3 +32,35 @@ test-find-test-targets-mock-path-all-files-num-targets:
 			test/mock-tests/alpha/mock-test-alpha.mk \
 			test/mock-tests/alpha/beta/mock-test-beta.mk \
 			test/mock-tests/alpha/beta/gamma/mock-test-gamma.mk)))
+
+test-find-test-targets-discovery-explicit-target:
+	@echo "Explicit test found"
+
+.PHONY: mock-discovery-single
+mock-discovery-single:
+	@echo "Single-line macro test"
+
+define mock-discovery-single-expected
+echo Single-line macro test
+endef
+
+$(call bowerbird::test::add-mock-test,test-find-test-targets-discovery-macro-single-line,mock-discovery-single,$(mock-discovery-single-expected))
+
+.PHONY: mock-discovery-multi
+mock-discovery-multi:
+	@echo "Multi-line macro test"
+
+define mock-discovery-multi-expected
+echo Multi-line macro test
+endef
+
+$(call bowerbird::test::add-mock-test,\
+    test-find-test-targets-discovery-macro-multi-line,\
+    mock-discovery-multi,\
+    $(mock-discovery-multi-expected))
+
+test-find-test-targets-discovery-count-all:
+	$(call bowerbird::test::compare-strings,\
+		10,\
+		$(words $(call bowerbird::test::find-test-targets,\
+			test/bowerbird-test/test-find-test-targets.mk)))

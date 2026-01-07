@@ -243,8 +243,8 @@ endef
 
 # bowerbird::test::find-test-targets,<files>,<pattern>
 #
-#   Returns a list of make targets starting with prefix 'test' found in the specified
-#	list of files.
+#   Discovers tests from both explicit targets and add-mock-test calls.
+#   Handles line continuation (backslash) for multi-line macro calls.
 #
 #   Args:
 #       files: List of files to search for make targets.
@@ -254,7 +254,12 @@ endef
 #       $(call bowerbird::test::find-test-targets,test-file-1.mk test-files-2.mk)
 #
 define bowerbird::test::find-test-targets
-$(sort $(shell sed -n 's/\(^$(subst *,[^:]*,$(BOWERBIRD_TEST/CONFIG/TARGET_PATTERN_USER))\):.*/\1/p' $1 2>/dev/null))
+$(sort $(shell cat $1 | \
+    sed -e ':a' -e '/\\$$/N' -e 's/\\\n[ \t]*//g' -e 'ta' | \
+    sed -n \
+        -e 's/\(^$(subst *,[^:]*,$(BOWERBIRD_TEST/CONFIG/TARGET_PATTERN_USER))\):.*/\1/p' \
+        -e 's/.*bowerbird::test::add-mock-test,[ \t]*\([^,]*\).*/\1/p' \
+    2>/dev/null))
 endef
 
 

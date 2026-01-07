@@ -57,3 +57,22 @@ define bowerbird::test::compare-files
     diff -q $1 $2 || \
             (echo "ERROR: Failed file comparison:" 1>&2 && diff -y $1 $2 1>&2 && exit 1)
 endef
+
+# bowerbird::test::compare-file-content,<file>,<expected>
+#
+#   Compares file contents against expected string value.
+#
+#   Args:
+#       file: Path to file containing actual output.
+#       expected: Expected string value.
+#
+#   Errors:
+#       Exits with non-zero code if file not found or content mismatch.
+#
+#   Example:
+#       $(call bowerbird::test::compare-file-content,results.log,$(expected))
+#
+define bowerbird::test::compare-file-content
+test -f "$1" || (>&2 echo "ERROR: Results file not found: $1" && exit 1)
+$(call bowerbird::test::compare-strings,$(shell cat $1),$2)
+endef

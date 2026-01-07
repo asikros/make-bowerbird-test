@@ -48,10 +48,10 @@ Author:   Name or Team
 ## Current Proposals
 
 ### Draft
-- `01-mock-shell-testing.md` - Mock shell framework for testing Make recipes without executing commands
+_(None yet)_
 
 ### Accepted
-_(None yet)_
+- `01-mock-shell-testing.md` - Mock shell framework for testing Make recipes without executing commands
 
 ### Rejected
 _(None yet)_

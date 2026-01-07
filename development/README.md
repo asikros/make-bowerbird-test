@@ -34,12 +34,16 @@ If a proposal is not accepted, it moves to `proposals/rejected/` with a rational
 
 All proposals must include this header:
 
-```markdown
-> **Status**: Draft | Accepted | Rejected
-> **Project**: make-bowerbird-test
-> **Created**: YYYY-MM-DD
-> **Author**: Name or Team
+````markdown
 ```
+Status:   Draft | Accepted | Rejected
+Project:  make-bowerbird-test
+Created:  YYYY-MM-DD
+Author:   Name or Team
+```
+
+---
+````
 
 ## Current Proposals
 

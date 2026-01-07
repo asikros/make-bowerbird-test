@@ -1,9 +1,13 @@
 # Mock Shell Testing Framework for Make Recipes
 
-> **Status**: Draft
-> **Project**: make-bowerbird-test
-> **Created**: 2026-01-07
-> **Author**: Bowerbird Team
+```
+Status:   Draft
+Project:  make-bowerbird-test
+Created:  2026-01-07
+Author:   Bowerbird Team
+```
+
+---
 
 ## Summary
 
@@ -19,19 +23,13 @@ Test the **recipe itself** (command construction, conditionals, variables) witho
 - **Recursive Make Pattern**: Outer test target invokes inner target with mock shell
 - **Expected Output Comparison**: Uses `bowerbird::test::compare-files` to verify command sequences
 
-**Benefits:**
-- Test recipe logic without command dependencies
-- No network, filesystem, or external tool requirements
-- 10-100x faster tests
-- Easy testing of error conditions and edge cases
-- Parallel test execution with `make -j`
-- Clear documentation through version-controlled `.expected` files
 
 ## Problem
 
 Testing Make recipes today requires executing the actual commands, which creates fundamental problems:
 
 ### Fundamental Issues
+
 1. **Dependency on External Commands**: Tests require git, curl, wget, compiler toolchains, etc.
 2. **Cannot Test Without Side Effects**: Commands modify filesystem, network, system state
 3. **Slow Execution**: Network I/O, disk operations, compilation all take time
@@ -39,16 +37,8 @@ Testing Make recipes today requires executing the actual commands, which creates
 5. **Limited Error Testing**: Hard to test error conditions without complex fixtures
 6. **Recipe Logic vs Command Logic**: Testing recipe construction requires executing commands
 
-### Specific Example (Git Dependencies)
-Current tests execute real `git clone` commands, which:
-- Requires network connectivity
-- Depends on external repositories being available
-- Is slow (network latency, actual clones)
-- Cannot easily test error conditions (bad URLs, network failures)
-- Cannot test edge cases without creating complex git repo fixtures
-- Makes CI/CD pipelines slower and less reliable
+### Examples
 
-### The Real Problem
 **We need to test recipe construction and logic independently of command execution.**
 
 A recipe like:
@@ -77,59 +67,8 @@ Implement a **general-purpose command interception framework** that:
 
 This allows testing the **recipe logic** separately from **command implementation**.
 
-## Use Cases
-
-This framework enables testing recipes for ANY type of operation:
-
-### 1. Git Operations (Current Focus)
-```makefile
-# Test: git clone with various flags
-# Verify: Correct URL, branch, depth, config flags
-```
-
-### 2. Build Systems
-```makefile
-# Test: Compiler invocations with CFLAGS
-# Verify: Flags passed correctly, object files generated in order
-# Example: $(CC) $(CFLAGS) -c $< -o $@
-```
-
-### 3. Package Management
-```makefile
-# Test: curl downloads with retries
-# Verify: URL construction, output paths, error handling
-# Example: curl --retry 3 -o $(PACKAGE) $(URL)
-```
-
-### 4. File Operations
-```makefile
-# Test: Complex file transformations
-# Verify: Correct paths, safety checks, conditional operations
-# Example: find, sed, awk pipelines
-```
-
-### 5. Docker/Container Operations
-```makefile
-# Test: docker build/run commands
-# Verify: Image tags, volume mounts, environment variables
-# Example: docker run -v $(PWD):/work -e VAR=$(VALUE) image:tag
-```
-
-### 6. Code Generation
-```makefile
-# Test: Template expansion, code generators
-# Verify: Input/output paths, flags passed through
-# Example: protoc, yacc, lex, custom generators
-```
-
-### 7. Test Execution
-```makefile
-# Test: Test runner invocations
-# Verify: Test selection, parallel execution flags
-# Example: pytest, cargo test, go test
-```
-
 ### Key Insight
+
 **Any recipe that constructs commands from Make variables can be unit tested without executing those commands.**
 
 ## What Are We Actually Testing?
@@ -137,14 +76,14 @@ This framework enables testing recipes for ANY type of operation:
 When using mock shell, we're testing the **Makefile logic**, not the **command behavior**:
 
 ### Testing Make's Job
-✅ **Variable expansion**
+- **Variable expansion**
 ```makefile
 # Test that $(CFLAGS) expands correctly
 $(CC) $(CFLAGS) -o $@ $<
 # Expected: gcc -O2 -Wall -o program main.c
 ```
 
-✅ **Conditional logic**
+- **Conditional logic**
 ```makefile
 # Test that flag is added when DEV_MODE is set
 $(if $(DEV_MODE),--verbose)
@@ -152,28 +91,28 @@ $(if $(DEV_MODE),--verbose)
 # Expected without: command
 ```
 
-✅ **Target-specific variables**
+- **Target-specific variables**
 ```makefile
 # Test that target-specific CFLAGS override global
 target: CFLAGS += -DDEBUG
 # Expected: gcc ... -DDEBUG ...
 ```
 
-✅ **Foreach loops**
+- **Foreach loops**
 ```makefile
 # Test that foreach generates correct command sequence
 $(foreach file,$(FILES),process $(file);)
 # Expected: process a.txt; process b.txt; process c.txt;
 ```
 
-✅ **String manipulation**
+- **String manipulation**
 ```makefile
 # Test that substitution works correctly
 $(patsubst %.c,%.o,$(SOURCES))
 # Expected: main.o util.o helper.o
 ```
 
-✅ **Override behavior**
+- **Override behavior**
 ```makefile
 # Test that command-line overrides are applied
 test-repo.branch=v2.0
@@ -181,10 +120,10 @@ test-repo.branch=v2.0
 ```
 
 ### NOT Testing Command Implementation
-❌ Does git clone actually work?
-❌ Does gcc produce valid binaries?
-❌ Does curl handle redirects?
-❌ Does docker authenticate correctly?
+- Does git clone actually work?
+- Does gcc produce valid binaries?
+- Does curl handle redirects?
+- Does docker authenticate correctly?
 
 **Those are tested separately with integration tests that use real commands.**
 
@@ -1114,7 +1053,7 @@ This proposal provides the foundation for **treating Makefile testing as a first
 ## Next Steps
 
 ### Immediate (Framework Development)
-1. ✅ Complete proposal document
+1. - Complete proposal document
 2. ⏭️ Review and refine proposal with team
 3. ⏭️ Implement basic mock shell script in `make-bowerbird-test`
 4. ⏭️ Add `ifdef BOWERBIRD_MOCK_SHELL` support

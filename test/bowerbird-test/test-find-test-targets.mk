@@ -35,6 +35,17 @@ test-find-test-targets-multiple-files:
 test-find-test-targets-multiple-files-count:
 	$(call bowerbird::test::compare-strings,6,$(words $(call bowerbird::test::find-test-targets,test/mock-tests/alpha/mock-test-alpha.mk test/mock-tests/alpha/beta/mock-test-beta.mk test/mock-tests/alpha/beta/gamma/mock-test-gamma.mk)))
 
+test-find-test-targets-empty-file:
+	$(call bowerbird::test::compare-strings,0,$(words $(call bowerbird::test::find-test-targets,test/mock-tests/mock-test-empty.mk)))
+
+test-find-test-targets-with-deps:
+	$(call bowerbird::test::compare-sets,\
+		$(call bowerbird::test::find-test-targets,test/mock-tests/mock-test-deps.mk),\
+		test-with-deps test-with-order-only test-with-pattern-dep)
+
+test-find-test-targets-with-deps-count:
+	$(call bowerbird::test::compare-strings,3,$(words $(call bowerbird::test::find-test-targets,test/mock-tests/mock-test-deps.mk)))
+
 test-find-test-targets-explicit-target:
 	@echo "Explicit test target"
 
@@ -74,4 +85,13 @@ test-find-test-targets-discovers-mock-multi:
 	$(call bowerbird::test::compare-strings,1,$(words $(filter test-find-test-targets-mock-multi-line,$(call bowerbird::test::find-test-targets,test/bowerbird-test/test-find-test-targets.mk))))
 
 test-find-test-targets-total-count:
-	$(call bowerbird::test::compare-strings,15,$(words $(call bowerbird::test::find-test-targets,test/bowerbird-test/test-find-test-targets.mk)))
+	$(call bowerbird::test::compare-strings,21,$(words $(call bowerbird::test::find-test-targets,test/bowerbird-test/test-find-test-targets.mk)))
+
+test-find-test-targets-four-continuations:
+	$(call bowerbird::test::compare-strings,1,$(words $(filter test-multiline-four-continuations,$(call bowerbird::test::find-test-targets,test/mock-tests/mock-test-multiline.mk))))
+
+test-find-test-targets-long-name:
+	$(call bowerbird::test::compare-strings,1,$(words $(filter test-this-is-a-very-long-target-name-that-tests-boundary-conditions,$(call bowerbird::test::find-test-targets,test/mock-tests/mock-test-multiline.mk))))
+
+test-find-test-targets-multiline-count:
+	$(call bowerbird::test::compare-strings,2,$(words $(call bowerbird::test::find-test-targets,test/mock-tests/mock-test-multiline.mk)))

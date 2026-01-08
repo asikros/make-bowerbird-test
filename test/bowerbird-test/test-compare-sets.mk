@@ -36,3 +36,6 @@ test-compare-sets-multiple-element-not-equal-extra-element:
 
 test-compare-sets-multiple-element-not-equal-missing-element:
 	! $(call bowerbird::test::compare-sets,alpha beta gamma,alpha beta)
+
+test-compare-sets-duplicates-collapsed:
+	$(call bowerbird::test::compare-sets,alpha alpha beta,alpha beta)

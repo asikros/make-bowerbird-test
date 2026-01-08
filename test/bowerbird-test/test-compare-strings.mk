@@ -1,20 +1,26 @@
-test-compare-string-equal:
+test-compare-strings-equal:
 	$(call bowerbird::test::compare-strings,alpha,alpha)
 
-test-compare-string-not-equal:
+test-compare-strings-not-equal:
 	! $(call bowerbird::test::compare-strings,alpha,beta)
 
-test-compare-string-not-equal-leading-whitespace:
+test-compare-strings-not-equal-leading-whitespace:
 	! $(call bowerbird::test::compare-strings,alpha, alpha)
 
-test-compare-string-not-equal-trailing-whitespace:
+test-compare-strings-not-equal-trailing-whitespace:
 	! $(call bowerbird::test::compare-strings,alpha,alpha )
 
-test-compare-string-not-equal-first-empty:
+test-compare-strings-not-equal-first-empty:
 	! $(call bowerbird::test::compare-strings,,beta)
 
-test-compare-string-not-equal-second-empty:
+test-compare-strings-not-equal-second-empty:
 	! $(call bowerbird::test::compare-strings,alpha,)
 
-test-compare-string-not-equal-both-empty:
+test-compare-strings-not-equal-both-empty:
 	$(call bowerbird::test::compare-strings,,)
+
+test-compare-strings-case-sensitive:
+	! $(call bowerbird::test::compare-strings,Alpha,alpha)
+
+test-compare-strings-special-chars:
+	$(call bowerbird::test::compare-strings,special @ # chars,special @ # chars)

@@ -85,7 +85,7 @@ test-find-test-targets-discovers-mock-multi:
 	$(call bowerbird::test::compare-strings,1,$(words $(filter test-find-test-targets-mock-multi-line,$(call bowerbird::test::find-test-targets,test/bowerbird-test/test-find-test-targets.mk))))
 
 test-find-test-targets-total-count:
-	$(call bowerbird::test::compare-strings,21,$(words $(call bowerbird::test::find-test-targets,test/bowerbird-test/test-find-test-targets.mk)))
+	$(call bowerbird::test::compare-strings,29,$(words $(call bowerbird::test::find-test-targets,test/bowerbird-test/test-find-test-targets.mk)))
 
 test-find-test-targets-four-continuations:
 	$(call bowerbird::test::compare-strings,1,$(words $(filter test-multiline-four-continuations,$(call bowerbird::test::find-test-targets,test/mock-tests/mock-test-multiline.mk))))
@@ -95,3 +95,27 @@ test-find-test-targets-long-name:
 
 test-find-test-targets-multiline-count:
 	$(call bowerbird::test::compare-strings,2,$(words $(call bowerbird::test::find-test-targets,test/mock-tests/mock-test-multiline.mk)))
+
+test-find-test-targets-excludes-underscore-prefix:
+	$(call bowerbird::test::compare-strings,0,$(words $(filter _test-underscore-prefix,$(call bowerbird::test::find-test-targets,test/mock-tests/mock-test-prefixed.mk))))
+
+test-find-test-targets-excludes-double-underscore-prefix:
+	$(call bowerbird::test::compare-strings,0,$(words $(filter __test-double-underscore-prefix,$(call bowerbird::test::find-test-targets,test/mock-tests/mock-test-prefixed.mk))))
+
+test-find-test-targets-excludes-helper-prefix:
+	$(call bowerbird::test::compare-strings,0,$(words $(filter helper-test-helper-prefix,$(call bowerbird::test::find-test-targets,test/mock-tests/mock-test-prefixed.mk))))
+
+test-find-test-targets-excludes-mock-underscore:
+	$(call bowerbird::test::compare-strings,0,$(words $(filter _test-mock-prefixed-underscore,$(call bowerbird::test::find-test-targets,test/mock-tests/mock-test-prefixed.mk))))
+
+test-find-test-targets-excludes-mock-internal:
+	$(call bowerbird::test::compare-strings,0,$(words $(filter __mock-prefixed-internal,$(call bowerbird::test::find-test-targets,test/mock-tests/mock-test-prefixed.mk))))
+
+test-find-test-targets-includes-valid-explicit:
+	$(call bowerbird::test::compare-strings,1,$(words $(filter test-prefixed-valid-target,$(call bowerbird::test::find-test-targets,test/mock-tests/mock-test-prefixed.mk))))
+
+test-find-test-targets-includes-valid-mock:
+	$(call bowerbird::test::compare-strings,1,$(words $(filter test-prefixed-mock-valid,$(call bowerbird::test::find-test-targets,test/mock-tests/mock-test-prefixed.mk))))
+
+test-find-test-targets-prefixed-count:
+	$(call bowerbird::test::compare-strings,2,$(words $(call bowerbird::test::find-test-targets,test/mock-tests/mock-test-prefixed.mk)))

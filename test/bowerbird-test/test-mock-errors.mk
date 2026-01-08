@@ -29,10 +29,10 @@ endef
 
 test-mock-error-comparison-fails:
 	! $(call bowerbird::test::add-mock-test,\
-		__test-mock-error-internal,\
+		__mock-error-internal,\
 		mock-error-mismatch-target,\
-		$(mock-error-mismatch-expected))
-	! $(MAKE) __test-mock-error-internal 2>&1 | grep -q "Failed string comparison"
+		mock-error-mismatch-expected,)
+	! $(MAKE) __mock-error-internal 2>&1 | grep -q "Failed string comparison"
 
 # test-mock-error-results-not-created
 #

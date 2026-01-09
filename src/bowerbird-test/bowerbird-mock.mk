@@ -30,6 +30,7 @@ $(BOWERBIRD_MOCK_SHELL): $(BOWERBIRD_MOCK_MK)
 		'echo "$$COMMAND" >> "$${BOWERBIRD_MOCK_RESULTS:?BOWERBIRD_MOCK_RESULTS must be set}"' \
 		> $@
 	@chmod +x $@
+	@xattr -d com.apple.provenance $@ 2>/dev/null || true
 
 # KEY MECHANISM: Target-specific SHELL override
 # When BOWERBIRD_MOCK_RESULTS is set (by test runner), all targets use mock shell
@@ -67,15 +68,21 @@ endef
 
 # Private implementation (called via $(eval) by bowerbird::test::add-mock-test)
 define __bowerbird::test::add-mock-test-impl
+# Expected file target - generates expected output
+$$(WORKDIR_TEST)/$1/.expected: $$(BOWERBIRD_MOCK_MK)
+	@mkdir -p $$(dir $$@)
+	@$(if $(value $3),printf '%b\n' '$(subst $(BOWERBIRD_NEWLINE),\n,$(value $3))',true) > $$@
+
+# Results file target - generates actual output
+$$(WORKDIR_TEST)/$1/.results: $$(BOWERBIRD_MOCK_SHELL)
+	@mkdir -p $$(dir $$@)
+	@rm -f $$@
+	$$(MAKE) BOWERBIRD_MOCK_RESULTS=$$@ $4 $2
+	@touch $$@
+
+# Test target - depends on both files and compares
 .PHONY: $1
 $1: SHELL = /bin/sh
-$1: export BOWERBIRD_MOCK_RESULTS = $$(WORKDIR_TEST)/$1/.results
-$1: $$(BOWERBIRD_MOCK_SHELL)
-	@mkdir -p $$(WORKDIR_TEST)/$1
-	@rm -f $$(WORKDIR_TEST)/$1/.results
-	$$(MAKE) BOWERBIRD_MOCK_RESULTS=$$(WORKDIR_TEST)/$1/.results $4 $2
-	@touch $$(WORKDIR_TEST)/$1/.results
-	@$(if $(value $3),printf '%b\n' '$(subst $(BOWERBIRD_NEWLINE),\n,$(value $3))',true) > $$(WORKDIR_TEST)/$1/.expected
-	@diff -u $$(WORKDIR_TEST)/$1/.expected $$(WORKDIR_TEST)/$1/.results || \
-		(>&2 echo "ERROR: Content mismatch for $1" && exit 1)
+$1: $$(WORKDIR_TEST)/$1/.expected $$(WORKDIR_TEST)/$1/.results
+	@diff -u $$^ || (>&2 echo "ERROR: Content mismatch for $1" && exit 1)
 endef

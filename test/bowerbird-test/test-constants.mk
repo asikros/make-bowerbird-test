@@ -10,7 +10,6 @@ test-constants-comma-in-subst:
 	$(call bowerbird::test::compare-strings,$(subst $(BOWERBIRD_COMMA), ,a$(BOWERBIRD_COMMA)b$(BOWERBIRD_COMMA)c),a b c)
 
 
-
 define define-constants-newline-in-subst
 line1
 line2

@@ -94,7 +94,7 @@ endef
 #   Validates that target and path arguments are non-empty.
 #   Returns: Makefile syntax for validation checks
 #
-define __bowerbird::test::validate-args
+define __bowerbird::test::validate-args # target, path
 $$(if $1,,$$(error ERROR: missing target in '$$$$(call bowerbird::test::suite,<target>,<path>)))
 $$(if $2,,$$(error ERROR: missing path in '$$$$(call bowerbird::test::suite,$1,)))
 endef
@@ -105,7 +105,7 @@ endef
 #   Discovers test files and sets BOWERBIRD_TEST/FILES/<suite-name>.
 #   Returns: Makefile syntax for file discovery
 #
-define __bowerbird::test::discover-files
+define __bowerbird::test::discover-files # suite-name, path, pattern
 ifndef BOWERBIRD_TEST/FILES/$1
 export BOWERBIRD_TEST/FILES/$1 := $$(call bowerbird::test::find-test-files,$2,$3)
 $$(if $$(BOWERBIRD_TEST/FILES/$1),,$$(warning WARNING: No test files found in '$2' matching '$3'))
@@ -118,7 +118,7 @@ endef
 #   Includes test files and discovers test targets.
 #   Returns: Makefile syntax for target discovery
 #
-define __bowerbird::test::discover-targets
+define __bowerbird::test::discover-targets # suite-name
 ifneq (,$$(BOWERBIRD_TEST/FILES/$1))
 ifeq ($$(filter $$(MAKEFILE_LIST),$$(BOWERBIRD_TEST/FILES/$1)),)
 include $$(BOWERBIRD_TEST/FILES/$1)
@@ -137,7 +137,7 @@ endef
 #   Finds previously failed tests if fail-first is enabled.
 #   Returns: Makefile syntax for failed test discovery
 #
-define __bowerbird::test::discover-failed-tests
+define __bowerbird::test::discover-failed-tests # suite-name
 ifneq ($$(bowerbird-test.config.fail-first),0)
 ifndef BOWERBIRD_TEST/CACHE/TESTS_PREV_FAILED/$1
 export BOWERBIRD_TEST/CACHE/TESTS_PREV_FAILED/$1 := $(call bowerbird::test::find-failed-cached-test-results,$$(bowerbird-test.constant.workdir-results)/$1,$$(bowerbird-test.constant.ext-fail))
@@ -153,7 +153,7 @@ endef
 #   Splits tests into primary (failed) and secondary (passing) lists.
 #   Returns: Makefile syntax for test list generation
 #
-define __bowerbird::test::split-tests
+define __bowerbird::test::split-tests # suite-name
 export BOWERBIRD_TEST/TARGETS_PRIMARY/$1 := $$(foreach target,$$(filter $$(BOWERBIRD_TEST/CACHE/TESTS_PREV_FAILED/$1),$$(BOWERBIRD_TEST/TARGETS/$1)),@bowerbird-test/run-test-target/$$(target)/$1)
 export BOWERBIRD_TEST/TARGETS_SECONDARY/$1 := $$(foreach target,$$(filter-out $$(BOWERBIRD_TEST/CACHE/TESTS_PREV_FAILED/$1),$$(BOWERBIRD_TEST/TARGETS/$1)),@bowerbird-test/run-test-target/$$(target)/$1)
 endef
@@ -164,7 +164,7 @@ endef
 #   Generates all runner helper targets (list, clean, run, report, main).
 #   Returns: Makefile syntax for runner targets
 #
-define __bowerbird::test::generate-runner-targets
+define __bowerbird::test::generate-runner-targets # suite-name
 .PHONY: bowerbird-test/runner/list-discovered-tests/$1
 bowerbird-test/runner/list-discovered-tests/$1:
 	@echo "Discovered tests"; $$(foreach t,$$(sort $$(BOWERBIRD_TEST/TARGETS/$1)),echo "    $$t";)
@@ -223,7 +223,7 @@ endef
 #   Generates the pattern rule for running individual tests.
 #   Returns: Makefile syntax for test execution pattern rule
 #
-define __bowerbird::test::generate-pattern-rule
+define __bowerbird::test::generate-pattern-rule # suite-name
 @bowerbird-test/run-test-target/%/$1: bowerbird-test/force
 	@mkdir -p $$(dir $$(bowerbird-test.constant.workdir-logs)/$1/$$*)
 	@mkdir -p $$(dir $$(bowerbird-test.constant.workdir-results)/$1/$$*)
@@ -248,19 +248,19 @@ define __bowerbird::test::generate-pattern-rule
 endef
 
 
-# __bowerbird::test::reset-config,<suite-name>
+# __bowerbird::test::reset-config
 #
 #   Resets pattern configuration to defaults.
 #   Returns: Makefile syntax for config reset
 #
-define __bowerbird::test::reset-config
+define __bowerbird::test::reset-config # (no args)
 bowerbird-test.config.file-pattern-user := $$(bowerbird-test.config.file-pattern-default)
 bowerbird-test.config.target-pattern-user := $$(bowerbird-test.config.target-pattern-default)
 endef
 
 
 # Master implementation that orchestrates the test suite by calling all sub-macros
-define __bowerbird::test::suite-impl
+define __bowerbird::test::suite-impl # target, path
 $(call __bowerbird::test::validate-args,$1,$2)
 $(call __bowerbird::test::discover-files,$1,$2,$(bowerbird-test.config.file-pattern-user))
 $(call __bowerbird::test::discover-targets,$1)

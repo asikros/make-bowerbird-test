@@ -89,7 +89,9 @@ This consistency makes the codebase more navigable and predictable.
 ## Documentation
 
 ### Macro/Function Docstrings
-Document all public macros with structured comments:
+
+Document all public macros with structured comments. Add inline parameter names after the `define` statement to clarify positional arguments:
+
 ```makefile
 # bowerbird::test::compare-strings,<str1>,<str2>
 #
@@ -106,9 +108,32 @@ Document all public macros with structured comments:
 #       $(call bowerbird::test::compare-strings,equal,equal)
 #       ! $(call bowerbird::test::compare-strings,not-equal,different)
 #
-define bowerbird::test::compare-strings
+define bowerbird::test::compare-strings # str1, str2
     test "$1" = "$2" || \
             (echo "ERROR: Failed string comparison: '$1' != '$2'" >&2 && exit 1)
+endef
+```
+
+**Inline Parameter Comments:**
+- Add `# arg1, arg2, ...` after `define` to document what `$1`, `$2`, etc. represent
+- Use `# (no args)` for macros that take no parameters
+- This makes the macro body more readable by clarifying positional arguments
+
+```makefile
+# Good - parameters clearly documented
+define __bowerbird::test::validate-args # target, path
+$$(if $1,,$$(error ERROR: missing target))
+$$(if $2,,$$(error ERROR: missing path))
+endef
+
+# Good - no parameters clearly indicated
+define __bowerbird::test::reset-config # (no args)
+bowerbird-test.config.file-pattern-user := $$(bowerbird-test.config.file-pattern-default)
+endef
+
+# Bad - unclear what $1, $2, $3 represent
+define __bowerbird::test::discover-files
+export BOWERBIRD_TEST/FILES/$1 := $$(call bowerbird::test::find-test-files,$2,$3)
 endef
 ```
 

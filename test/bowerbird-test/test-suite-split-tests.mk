@@ -14,7 +14,7 @@ test-suite-split-exports-primary:
 		$(if $(findstring export BOWERBIRD_TEST/TARGETS_PRIMARY/test-runner,$(_test_split_tests_output)),pass,fail)),pass)
 
 
-# Test: Generated syntax exports secondary targets variable  
+# Test: Generated syntax exports secondary targets variable
 test-suite-split-exports-secondary:
 	$(call bowerbird::test::compare-strings,$(strip \
 		$(if $(findstring export BOWERBIRD_TEST/TARGETS_SECONDARY/test-runner,$(_test_split_tests_output)),pass,fail)),pass)

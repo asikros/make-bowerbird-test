@@ -58,12 +58,6 @@ define bowerbird::test::compare-files
             (echo "ERROR: Failed file comparison:" 1>&2 && diff -y $1 $2 1>&2 && exit 1)
 endef
 
-# Newline character for use in $(subst)
-define bowerbird-newline
-
-
-endef
-
 # bowerbird::test::compare-file-content,<file>,<expected>
 #
 #   Compares file contents against expected string value. Supports both
@@ -81,5 +75,5 @@ endef
 #       $(call bowerbird::test::compare-file-content,results.log,$(multiline-var))
 #
 define bowerbird::test::compare-file-content
-printf '%b' '$(subst $(bowerbird-newline),\n,$2)' | diff -q "$1" - >/dev/null || (>&2 echo "ERROR: Content mismatch for $1" && exit 1)
+printf '%b' '$(subst $(BOWERBIRD_NEWLINE),\n,$2)' | diff -q "$1" - >/dev/null || (>&2 echo "ERROR: Content mismatch for $1" && exit 1)
 endef

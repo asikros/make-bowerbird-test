@@ -27,7 +27,7 @@ mock-prefixed-target:
 	@echo "mock target"
 
 define mock-prefixed-expected
-echo mock target
+echo "mock target"
 endef
 
 $(call bowerbird::test::add-mock-test,\

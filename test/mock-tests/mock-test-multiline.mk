@@ -5,7 +5,7 @@ mock-multiline-target:
 	@echo "multiline"
 
 define mock-multiline-expected
-echo multiline
+echo "multiline"
 endef
 
 $(call bowerbird::test::add-mock-test,\

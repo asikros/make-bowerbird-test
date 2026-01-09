@@ -1,64 +1,81 @@
 WORKDIR_TEST ?= $(error ERROR: Undefined variable WORKDIR_TEST)
 
-# Mock shell script rendering
+# Mock shell script content
+# The script receives the command as $1 and appends it to BOWERBIRD_MOCK_RESULTS
 define bowerbird-mock-shell-rendering
 #!/bin/sh
-set -eu
-
-RESULTS_FILE="$${BOWERBIRD_MOCK_RESULTS:?BOWERBIRD_MOCK_RESULTS must be set}"
-mkdir -p "$$(dirname "$${RESULTS_FILE}")"
-echo "$$1" >> "$${RESULTS_FILE}"
+echo "$$1" >> "$${BOWERBIRD_MOCK_RESULTS:?BOWERBIRD_MOCK_RESULTS must be set}"
 endef
 
-# Target to create the mock shell script
+# Mock shell script path and source tracking
 BOWERBIRD_MOCK_SHELL := $(WORKDIR_TEST)/.mock-shell.sh
-BOWERBIRD_MOCK.MK := $(lastword $(MAKEFILE_LIST))
+BOWERBIRD_MOCK_MK := $(lastword $(MAKEFILE_LIST))
 
-$(BOWERBIRD_MOCK_SHELL): $(BOWERBIRD_MOCK.MK)
+# Create mock shell script when needed
+# Use explicit SHELL=/bin/sh to avoid chicken-and-egg with pattern rule
+# Depends on this makefile to regenerate if definition changes
+#
+# IMPORTANT: The script extracts the last argument ($#) as the command.
+# This handles any .SHELLFLAGS configuration:
+#   .SHELLFLAGS := -c        → args: -c "cmd"       → last arg is cmd ✓
+#   .SHELLFLAGS := -e -u -c  → args: -e -u -c "cmd" → last arg is cmd ✓
+#   .SHELLFLAGS := -xc       → args: -xc "cmd"      → last arg is cmd ✓
+$(BOWERBIRD_MOCK_SHELL): SHELL = /bin/sh
+$(BOWERBIRD_MOCK_SHELL): $(BOWERBIRD_MOCK_MK)
 	@mkdir -p $(dir $@)
-	$(file >$@,$(bowerbird-mock-shell-rendering))
-	@chmod +x "$@"
+	@printf '%s\n' \
+		'#!/bin/sh' \
+		'# Extract command (always last argument after SHELLFLAGS)' \
+		'eval "COMMAND=\"\$${$$#}\""' \
+		'echo "$$COMMAND" >> "$${BOWERBIRD_MOCK_RESULTS:?BOWERBIRD_MOCK_RESULTS must be set}"' \
+		> $@
+	@chmod +x $@
 
-# Automatic SHELL replacement when BOWERBIRD_MOCK_RESULTS is set
+# KEY MECHANISM: Target-specific SHELL override
+# When BOWERBIRD_MOCK_RESULTS is set (by test runner), all targets use mock shell
+# This ONLY affects recipe execution, not $(shell) calls during parsing
 ifdef BOWERBIRD_MOCK_RESULTS
-    SHELL := $(BOWERBIRD_MOCK_SHELL)
-    .SHELLFLAGS :=
+%: SHELL = $(BOWERBIRD_MOCK_SHELL)
 endif
-
-# bowerbird::test::add-mock-test-implementation
-#
-#   Internal implementation that generates the test target.
-#
-#   Args:
-#       $1: Test name
-#       $2: Target to test
-#       $3: Expected output string
-#       $4: Optional command-line variables (e.g., VAR1=value VAR2=value)
-#
-define bowerbird::test::add-mock-test-implementation
-$1: __MOCK_RESULTS = $$(WORKDIR_TEST)/$1/.results
-$1: $$(BOWERBIRD_MOCK_SHELL)
-	$$(MAKE) BOWERBIRD_MOCK_RESULTS=$$(__MOCK_RESULTS) $4 $2
-	@$$(call bowerbird::test::compare-file-content,$$(__MOCK_RESULTS),$3)
-endef
 
 # bowerbird::test::add-mock-test
 #
-#   Adds a mock test target with automatic boilerplate.
+#   Creates a test target that runs another target with mock shell
+#   and compares captured commands against expected output.
 #
 #   Args:
-#       $1: Test name
-#       $2: Target to test
-#       $3: Expected output string
-#       $4: Optional command-line variables (e.g., VAR1=value VAR2=value)
+#       $1: Test name (e.g., test-mock-clean)
+#       $2: Target to test (e.g., clean)
+#       $3: Expected output variable name (define block with expected commands)
+#       $4: Optional extra make arguments (e.g., VAR=value)
 #
 #   Example:
+#       define expected-clean
+#       rm -rf /tmp/build
+#       echo Clean complete
+#       endef
+#
 #       $(call bowerbird::test::add-mock-test,\
-#           test-mock-clean,clean,$(mock-clean-expected))
-#       $(call bowerbird::test::add-mock-test,\
-#           test-mock-git-dep,myrepo/.,$(expected),\
-#           __TEST_MOCK_GIT_DEPENDENCY=)
+#           test-mock-clean,\
+#           clean,\
+#           expected-clean,)
 #
 define bowerbird::test::add-mock-test
-$(eval $(call bowerbird::test::add-mock-test-implementation,$1,$2,$3,$4))
+$(eval $(call __bowerbird::test::add-mock-test-impl,$(strip $1),$(strip $2),$(strip $3),$(strip $4)))
+endef
+
+
+# Private implementation (called via $(eval) by bowerbird::test::add-mock-test)
+define __bowerbird::test::add-mock-test-impl
+.PHONY: $1
+$1: SHELL = /bin/sh
+$1: export BOWERBIRD_MOCK_RESULTS = $$(WORKDIR_TEST)/$1/.results
+$1: $$(BOWERBIRD_MOCK_SHELL)
+	@mkdir -p $$(WORKDIR_TEST)/$1
+	@rm -f $$(WORKDIR_TEST)/$1/.results
+	$$(MAKE) BOWERBIRD_MOCK_RESULTS=$$(WORKDIR_TEST)/$1/.results $4 $2
+	@touch $$(WORKDIR_TEST)/$1/.results
+	@$(if $(value $3),printf '%b\n' '$(subst $(BOWERBIRD_NEWLINE),\n,$(value $3))',true) > $$(WORKDIR_TEST)/$1/.expected
+	@diff -u $$(WORKDIR_TEST)/$1/.expected $$(WORKDIR_TEST)/$1/.results || \
+		(>&2 echo "ERROR: Content mismatch for $1" && exit 1)
 endef

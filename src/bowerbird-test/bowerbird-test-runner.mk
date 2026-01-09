@@ -85,37 +85,14 @@ endef
 # 		make test-target
 #
 define bowerbird::test::generate-runner # target, path
-$(eval $(call bowerbird::test::generate-runner-implementation,$1,$2))
+$(eval $(call __bowerbird::test::generate-runner-impl,$1,$2))
 endef
 
 
-# bowerbird::test::generate-runner-implementation,<target>,<path>
-#
-#   Implementation for creating a target for running all the test targets discovered
-#   in the specified test file path. The test
-#
-#   Args:
-#       target: Name of the test-runner target to create.
-#       path: Starting directory name for the search.
-#
-#   Configuration:
-#       pattern-test-files: Wildcard filename pattern used during test discovery.
-#			Refer to bowerbird::test::pattern-test-files for more information about
-#			changing this value. Defaults to 'test*.mk'.
-#       pattern-test-targets: Wildcard target pattern used during test discovery.
-#			Refer to bowerbird::test::pattern-test-targets for more information about
-#			changing this value. Defaults to 'test*'.
-#
-#	Error:
-#		Throws an error if path empty.
-#
-#   Example:
-#       $(call bowerbird::test::generate-runner,test-target,test-dir)
-# 		make test-target
-#
-define bowerbird::test::generate-runner-implementation
-    $$(if $1,,$$(error ERROR: missing target in '$$$$(call bowerbird::test::generate-runner-implementation,<target>,<path>)))
-    $$(if $2,,$$(error ERROR: missing path in '$$$$(call bowerbird::test::generate-runner-implementation,$1,)))
+# Private implementation (called via $(eval) by bowerbird::test::generate-runner)
+define __bowerbird::test::generate-runner-impl
+    $$(if $1,,$$(error ERROR: missing target in '$$$$(call bowerbird::test::generate-runner,<target>,<path>)))
+    $$(if $2,,$$(error ERROR: missing path in '$$$$(call bowerbird::test::generate-runner,$1,)))
     ifndef BOWERBIRD_TEST/FILES/$1
         export BOWERBIRD_TEST/FILES/$1 := $$(call bowerbird::test::find-test-files,$2,$$(BOWERBIRD_TEST/CONFIG/FILE_PATTERN_USER))
         $$(if $$(BOWERBIRD_TEST/FILES/$1),,$$(warning WARNING: No test files found in '$2' matching '$$(BOWERBIRD_TEST/CONFIG/FILE_PATTERN_USER)'))
@@ -195,7 +172,7 @@ endif
     @bowerbird-test/run-test-target/%/$1: bowerbird-test/force
 		@mkdir -p $$(dir $$(BOWERBIRD_TEST/CONSTANT/WORKDIR_LOGS)/$1/$$*)
 		@mkdir -p $$(dir $$(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/$1/$$*)
-		@($(MAKE) $$* --debug=v --warn-undefined-variables SHELL='sh -xvp' $$(BOWERBIRD_TEST/CONSTANT/PROCESS_TAG) \
+		@($(MAKE) $$* --debug=v --warn-undefined-variables $$(BOWERBIRD_TEST/CONSTANT/PROCESS_TAG) \
 				>$$(BOWERBIRD_TEST/CONSTANT/WORKDIR_LOGS)/$1/$$*.$$(BOWERBIRD_TEST/CONSTANT/EXT_LOG) 2>&1 && \
 				(! (grep -v "grep.*$$(BOWERBIRD_TEST/CONSTANT/UNDEFINED_VARIABLE_WARNING)" \
 						$$(BOWERBIRD_TEST/CONSTANT/WORKDIR_LOGS)/$1/$$*.$$(BOWERBIRD_TEST/CONSTANT/EXT_LOG) | \

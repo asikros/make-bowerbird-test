@@ -1,6 +1,3 @@
-# Helper variable to escape comma in $(subst) calls
-BOWERBIRD_COMMA := ,
-
 # bowerbird::test::find-test-files,<path>,<pattern>
 #
 #   Returns a list of all the files matching the specified pattern under the directory

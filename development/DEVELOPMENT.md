@@ -43,7 +43,7 @@ development/
 │   └── rejected/   # Proposals that were rejected (with rationale)
 ├── requirements/   # Code standards and style guides
 ├── workflows/      # Development process documentation
-└── README.md       # This file
+└── DEVELOPMENT.md  # This file
 ```
 
 ## Proposal Lifecycle

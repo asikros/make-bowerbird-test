@@ -5,6 +5,7 @@ bowerbird-test.config.fail-fast = 0
 bowerbird-test.config.fail-first = 0
 bowerbird-test.config.file-pattern-default = test*.mk
 bowerbird-test.config.file-pattern-user = $(bowerbird-test.config.file-pattern-default)
+bowerbird-test.config.suppress-warnings = 0
 bowerbird-test.config.target-pattern-default = test*
 bowerbird-test.config.target-pattern-user = $(bowerbird-test.config.target-pattern-default)
 
@@ -108,7 +109,7 @@ endef
 define __bowerbird::test::discover-files # suite-name, path, pattern
 ifndef BOWERBIRD_TEST/FILES/$1
 export BOWERBIRD_TEST/FILES/$1 := $$(call bowerbird::test::find-test-files,$2,$3)
-$$(if $$(BOWERBIRD_TEST/FILES/$1),,$$(warning WARNING: No test files found in '$2' matching '$3'))
+$$(if $$(BOWERBIRD_TEST/FILES/$1),,$$(if $$(filter 0,$$(bowerbird-test.config.suppress-warnings)),$$(warning WARNING: No test files found in '$2' matching '$3')))
 endif
 endef
 

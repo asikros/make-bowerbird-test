@@ -22,6 +22,8 @@ test-pattern-test-files-gamma:
 
 
 $(call bowerbird::test::pattern-test-files,no-match.mk)
+bowerbird-test.config.suppress-warnings = 1
 $(call bowerbird::test::suite,mock-test-pattern-test-files-no-match-runner,test/mock-tests)
+bowerbird-test.config.suppress-warnings = 0
 test-pattern-test-files-no-match:
 	$(call bowerbird::test::compare-sets,$(BOWERBIRD_TEST/FILES/mock-$@-runner),)

@@ -1,4 +1,6 @@
+bowerbird-test.config.suppress-warnings = 1
 $(call bowerbird::test::suite,mock-test-run-test-target-runner,mock-path)
+bowerbird-test.config.suppress-warnings = 0
 
 
 test-run-test-targets-failing-test-non-zero-exit-status:

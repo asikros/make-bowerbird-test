@@ -10,8 +10,10 @@ WORKDIR_TEST ?= $(error ERROR: Undefined variable WORKDIR_TEST)
 # KEY MECHANISM: Target-specific SHELL override
 # When BOWERBIRD_MOCK_RESULTS is set (by test runner), all targets use mock shell
 # This ONLY affects recipe execution, not $(shell) calls during parsing
+# The inline shell captures the command and appends it to BOWERBIRD_MOCK_RESULTS
+# Format: sh -c 'eval "CMD=\"${$#}\""; echo "$CMD" >> "$RESULTS"' sh
 ifdef BOWERBIRD_MOCK_RESULTS
-%: SHELL = $(BOWERBIRD_MOCK_SHELL_INLINE)
+%: SHELL = sh -c 'eval "COMMAND=\"\$${$$\#}\""; echo "$$COMMAND" >> "$${BOWERBIRD_MOCK_RESULTS:?BOWERBIRD_MOCK_RESULTS must be set}"' sh
 endif
 
 # bowerbird::test::add-mock-test

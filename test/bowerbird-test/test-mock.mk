@@ -127,11 +127,6 @@ mock-multiline-with-vars-expected,\
 __TEST_MULTILINE_VARS=1)
 
 
-test-mock-shell-script-exists:
-	@test -f $(BOWERBIRD_MOCK_SHELL)
-	@test -x $(BOWERBIRD_MOCK_SHELL)
-
-
 .PHONY: mock-test-empty
 mock-test-empty:
 

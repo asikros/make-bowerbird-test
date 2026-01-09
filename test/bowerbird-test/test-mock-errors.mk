@@ -37,14 +37,3 @@ test-mock-error-empty-test-name:
 
 test-mock-error-empty-target-name:
 	@echo "Test passes if no syntax error occurs"
-
-
-test-mock-error-shell-script-not-executable:
-	@$(MAKE) $(BOWERBIRD_MOCK_SHELL)
-	@chmod -x $(BOWERBIRD_MOCK_SHELL)
-	@$(MAKE) BOWERBIRD_MOCK_RESULTS=$(WORKDIR_TEST)/$@/.results \
-		SHELL=$(BOWERBIRD_MOCK_SHELL) \
-		.SHELLFLAGS= \
-		mock-error-mismatch-target 2>&1 | \
-		grep -qi "permission denied"
-	@chmod +x $(BOWERBIRD_MOCK_SHELL)

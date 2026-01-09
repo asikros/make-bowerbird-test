@@ -1,24 +1,24 @@
 WORKDIR_TEST ?= $(error ERROR: Undefined variable WORKDIR_TEST)
 
-BOWERBIRD_TEST/CONFIG/FAIL_EXIT_CODE = 0
-BOWERBIRD_TEST/CONFIG/FAIL_FAST = 0
-BOWERBIRD_TEST/CONFIG/FAIL_FIRST = 0
-BOWERBIRD_TEST/CONFIG/FILE_PATTERN_DEFAULT = test*.mk
-BOWERBIRD_TEST/CONFIG/FILE_PATTERN_USER = $(BOWERBIRD_TEST/CONFIG/FILE_PATTERN_DEFAULT)
-BOWERBIRD_TEST/CONFIG/TARGET_PATTERN_DEFAULT = test*
-BOWERBIRD_TEST/CONFIG/TARGET_PATTERN_USER = $(BOWERBIRD_TEST/CONFIG/TARGET_PATTERN_DEFAULT)
+bowerbird-test.config.fail-exit-code = 0
+bowerbird-test.config.fail-fast = 0
+bowerbird-test.config.fail-first = 0
+bowerbird-test.config.file-pattern-default = test*.mk
+bowerbird-test.config.file-pattern-user = $(bowerbird-test.config.file-pattern-default)
+bowerbird-test.config.target-pattern-default = test*
+bowerbird-test.config.target-pattern-user = $(bowerbird-test.config.target-pattern-default)
 
-BOWERBIRD_TEST/CONSTANT/PROCESS_TAG = __BOWERBIRD_TEST_PROCESS_TAG__=$(BOWERBIRD_TEST/SYSTEM/MAKEPID)
-BOWERBIRD_TEST/CONSTANT/EXT_FAIL = fail
-BOWERBIRD_TEST/CONSTANT/EXT_LOG = log
-BOWERBIRD_TEST/CONSTANT/EXT_PASS = pass
-BOWERBIRD_TEST/CONSTANT/SUBDIR_CACHE = .bowerbird
-BOWERBIRD_TEST/CONSTANT/UNDEFINED_VARIABLE_WARNING = warning: undefined variable
-BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS = $(BOWERBIRD_TEST/CONSTANT/WORKDIR_ROOT)/$(BOWERBIRD_TEST/CONSTANT/SUBDIR_CACHE)
-BOWERBIRD_TEST/CONSTANT/WORKDIR_LOGS = $(BOWERBIRD_TEST/CONSTANT/WORKDIR_ROOT)/$(BOWERBIRD_TEST/CONSTANT/SUBDIR_CACHE)
-BOWERBIRD_TEST/CONSTANT/WORKDIR_ROOT = $(WORKDIR_TEST)
+bowerbird-test.system.makepid := $(shell echo $$PPID)
 
-BOWERBIRD_TEST/SYSTEM/MAKEPID := $(shell echo $$PPID)
+bowerbird-test.constant.process-tag = __BOWERBIRD_TEST_PROCESS_TAG__=$(bowerbird-test.system.makepid)
+bowerbird-test.constant.ext-fail = fail
+bowerbird-test.constant.ext-log = log
+bowerbird-test.constant.ext-pass = pass
+bowerbird-test.constant.subdir-cache = .bowerbird
+bowerbird-test.constant.undefined-variable-warning = warning: undefined variable
+bowerbird-test.constant.workdir-results = $(bowerbird-test.constant.workdir-root)/$(bowerbird-test.constant.subdir-cache)
+bowerbird-test.constant.workdir-logs = $(bowerbird-test.constant.workdir-root)/$(bowerbird-test.constant.subdir-cache)
+bowerbird-test.constant.workdir-root = $(WORKDIR_TEST)
 
 
 # bowerbird::test::pattern-test-files,<patterns>
@@ -36,7 +36,7 @@ BOWERBIRD_TEST/SYSTEM/MAKEPID := $(shell echo $$PPID)
 #       $(call bowerbird::test::pattern-test-files,*test.*)
 #
 define bowerbird::test::pattern-test-files
-$(eval BOWERBIRD_TEST/CONFIG/FILE_PATTERN_USER := $1)
+$(eval bowerbird-test.config.file-pattern-user := $1)
 endef
 
 
@@ -55,17 +55,17 @@ endef
 #       $(call bowerbird::test::pattern-test-targets,*_check)
 #
 define bowerbird::test::pattern-test-targets
-$(eval BOWERBIRD_TEST/CONFIG/TARGET_PATTERN_USER := $1)
+$(eval bowerbird-test.config.target-pattern-user := $1)
 endef
 
 
-# bowerbird::test::generate-runner,<target>,<path>
+# bowerbird::test::suite,<target>,<path>
 #
 #   Creates a target for running all the test targets discovered in the specified test
 #	file path.
 #
 #   Args:
-#       target: Name of the test-runner target to create.
+#       target: Name of the test suite target to create.
 #       path: Starting directory name for the search.
 #
 #   Configuration:
@@ -81,25 +81,25 @@ endef
 #		Throws an error if path empty.
 #
 #   Example:
-#       $(call bowerbird::test::generate-runner,test-target,test-dir)
+#       $(call bowerbird::test::suite,test-target,test-dir)
 # 		make test-target
 #
-define bowerbird::test::generate-runner # target, path
-$(eval $(call __bowerbird::test::generate-runner-impl,$1,$2))
+define bowerbird::test::suite # target, path
+$(eval $(call __bowerbird::test::suite-impl,$1,$2))
 endef
 
 
-# Private implementation (called via $(eval) by bowerbird::test::generate-runner)
-define __bowerbird::test::generate-runner-impl
-    $$(if $1,,$$(error ERROR: missing target in '$$$$(call bowerbird::test::generate-runner,<target>,<path>)))
-    $$(if $2,,$$(error ERROR: missing path in '$$$$(call bowerbird::test::generate-runner,$1,)))
+# Private implementation (called via $(eval) by bowerbird::test::suite)
+define __bowerbird::test::suite-impl
+    $$(if $1,,$$(error ERROR: missing target in '$$$$(call bowerbird::test::suite,<target>,<path>)))
+    $$(if $2,,$$(error ERROR: missing path in '$$$$(call bowerbird::test::suite,$1,)))
     ifndef BOWERBIRD_TEST/FILES/$1
-        export BOWERBIRD_TEST/FILES/$1 := $$(call bowerbird::test::find-test-files,$2,$$(BOWERBIRD_TEST/CONFIG/FILE_PATTERN_USER))
-        $$(if $$(BOWERBIRD_TEST/FILES/$1),,$$(warning WARNING: No test files found in '$2' matching '$$(BOWERBIRD_TEST/CONFIG/FILE_PATTERN_USER)'))
+        export BOWERBIRD_TEST/FILES/$1 := $$(call bowerbird::test::find-test-files,$2,$$(bowerbird-test.config.file-pattern-user))
+        $$(if $$(BOWERBIRD_TEST/FILES/$1),,$$(warning WARNING: No test files found in '$2' matching '$$(bowerbird-test.config.file-pattern-user)'))
     endif
     ifneq (,$$(BOWERBIRD_TEST/FILES/$1))
         ifndef BOWERBIRD_TEST/TARGETS/$1
-            export BOWERBIRD_TEST/TARGETS/$1 := $$(call bowerbird::test::find-test-targets,$$(BOWERBIRD_TEST/FILES/$1),$$(BOWERBIRD_TEST/CONFIG/TARGET_PATTERN_USER))
+            export BOWERBIRD_TEST/TARGETS/$1 := $$(call bowerbird::test::find-test-targets,$$(BOWERBIRD_TEST/FILES/$1),$$(bowerbird-test.config.target-pattern-user))
         endif
         ifeq ($$(filter $$(MAKEFILE_LIST),$$(BOWERBIRD_TEST/FILES/$1)),)
             include $$(BOWERBIRD_TEST/FILES/$1)
@@ -107,9 +107,9 @@ define __bowerbird::test::generate-runner-impl
     else
         BOWERBIRD_TEST/TARGETS/$1 =
     endif
-    ifneq ($$(BOWERBIRD_TEST/CONFIG/FAIL_FIRST),0)
+    ifneq ($$(bowerbird-test.config.fail-first),0)
         ifndef BOWERBIRD_TEST/CACHE/TESTS_PREV_FAILED/$1
-            export BOWERBIRD_TEST/CACHE/TESTS_PREV_FAILED/$1 := $(call bowerbird::test::find-failed-cached-test-results,$$(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/$1,$$(BOWERBIRD_TEST/CONSTANT/EXT_FAIL))
+            export BOWERBIRD_TEST/CACHE/TESTS_PREV_FAILED/$1 := $(call bowerbird::test::find-failed-cached-test-results,$$(bowerbird-test.constant.workdir-results)/$1,$$(bowerbird-test.constant.ext-fail))
         endif
     else
         BOWERBIRD_TEST/CACHE/TESTS_PREV_FAILED/$1 =
@@ -123,10 +123,10 @@ define __bowerbird::test::generate-runner-impl
 
     .PHONY: bowerbird-test/runner/clean-results/$1
     bowerbird-test/runner/clean-results/$1:
-		@test -n $$(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/$1
-		@mkdir -p $$(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/$1
-		@test -d $$(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/$1
-		@rm -f $$(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/$1/*
+		@test -n $$(bowerbird-test.constant.workdir-results)/$1
+		@mkdir -p $$(bowerbird-test.constant.workdir-results)/$1
+		@test -d $$(bowerbird-test.constant.workdir-results)/$1
+		@rm -f $$(bowerbird-test.constant.workdir-results)/$1/*
 
     .PHONY: bowerbird-test/runner/run-primary-tests/$1
     bowerbird-test/runner/run-primary-tests/$1: $$(BOWERBIRD_TEST/TARGETS_PRIMARY/$1)
@@ -137,11 +137,11 @@ define __bowerbird::test::generate-runner-impl
     .PHONY: bowerbird-test/runner/report-results/$1
     bowerbird-test/runner/report-results/$1:
 		@$$(eval BOWERBIRD_TEST/CACHE/TESTS_PASSED_CURR/$1 = $$(shell find \
-				$$(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/$1 \
-				-type f -name '*.$$(BOWERBIRD_TEST/CONSTANT/EXT_PASS)'))
+				$$(bowerbird-test.constant.workdir-results)/$1 \
+				-type f -name '*.$$(bowerbird-test.constant.ext-pass)'))
 		$$(eval BOWERBIRD_TEST/CACHE/TESTS_FAILED_CURR/$1 = $$(shell find \
-				$$(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/$1 \
-				-type f -name '*.$$(BOWERBIRD_TEST/CONSTANT/EXT_FAIL)'))
+				$$(bowerbird-test.constant.workdir-results)/$1 \
+				-type f -name '*.$$(bowerbird-test.constant.ext-fail)'))
 		@test -z "$$(BOWERBIRD_TEST/CACHE/TESTS_PASSED_CURR/$1)" || cat $$(BOWERBIRD_TEST/CACHE/TESTS_PASSED_CURR/$1)
 		@test -z "$$(BOWERBIRD_TEST/CACHE/TESTS_FAILED_CURR/$1)" || cat $$(BOWERBIRD_TEST/CACHE/TESTS_FAILED_CURR/$1)
 		@test $$(words $$(BOWERBIRD_TEST/CACHE/TESTS_FAILED_CURR/$1)) -eq 0 || \
@@ -157,7 +157,7 @@ define __bowerbird::test::generate-runner-impl
 
     .PHONY: $1
     $1:
-		@test "$(BOWERBIRD_TEST/CONSTANT/EXT_FAIL)" != "$(BOWERBIRD_TEST/CONSTANT/EXT_PASS)"
+		@test "$(bowerbird-test.constant.ext-fail)" != "$(bowerbird-test.constant.ext-pass)"
 		@$(MAKE) bowerbird-test/runner/list-discovered-tests/$1
 		@$(MAKE) bowerbird-test/runner/clean-results/$1
 ifneq ($$(BOWERBIRD_TEST/TARGETS_PRIMARY/$1),)
@@ -170,29 +170,29 @@ endif
 
 
     @bowerbird-test/run-test-target/%/$1: bowerbird-test/force
-		@mkdir -p $$(dir $$(BOWERBIRD_TEST/CONSTANT/WORKDIR_LOGS)/$1/$$*)
-		@mkdir -p $$(dir $$(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/$1/$$*)
-		@($(MAKE) $$* --debug=v --warn-undefined-variables $$(BOWERBIRD_TEST/CONSTANT/PROCESS_TAG) \
-				>$$(BOWERBIRD_TEST/CONSTANT/WORKDIR_LOGS)/$1/$$*.$$(BOWERBIRD_TEST/CONSTANT/EXT_LOG) 2>&1 && \
-				(! (grep -v "grep.*$$(BOWERBIRD_TEST/CONSTANT/UNDEFINED_VARIABLE_WARNING)" \
-						$$(BOWERBIRD_TEST/CONSTANT/WORKDIR_LOGS)/$1/$$*.$$(BOWERBIRD_TEST/CONSTANT/EXT_LOG) | \
-						grep --color=always "^.*$$(BOWERBIRD_TEST/CONSTANT/UNDEFINED_VARIABLE_WARNING).*$$$$" \
-						>> $$(BOWERBIRD_TEST/CONSTANT/WORKDIR_LOGS)/$1/$$*.$$(BOWERBIRD_TEST/CONSTANT/EXT_LOG)) || exit 1) && \
+		@mkdir -p $$(dir $$(bowerbird-test.constant.workdir-logs)/$1/$$*)
+		@mkdir -p $$(dir $$(bowerbird-test.constant.workdir-results)/$1/$$*)
+		@($(MAKE) $$* --debug=v --warn-undefined-variables $$(bowerbird-test.constant.process-tag) \
+				>$$(bowerbird-test.constant.workdir-logs)/$1/$$*.$$(bowerbird-test.constant.ext-log) 2>&1 && \
+				(! (grep -v "grep.*$$(bowerbird-test.constant.undefined-variable-warning)" \
+						$$(bowerbird-test.constant.workdir-logs)/$1/$$*.$$(bowerbird-test.constant.ext-log) | \
+						grep --color=always "^.*$$(bowerbird-test.constant.undefined-variable-warning).*$$$$" \
+						>> $$(bowerbird-test.constant.workdir-logs)/$1/$$*.$$(bowerbird-test.constant.ext-log)) || exit 1) && \
 				( \
 					printf "\e[1;32mPassed:\e[0m $$*\n" && \
-					printf "\e[1;32mPassed:\e[0m $$*\n" > $$(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/$1/$$*.$$(BOWERBIRD_TEST/CONSTANT/EXT_PASS) \
+					printf "\e[1;32mPassed:\e[0m $$*\n" > $$(bowerbird-test.constant.workdir-results)/$1/$$*.$$(bowerbird-test.constant.ext-pass) \
 				)) || \
 			(\
 				printf "\e[1;31mFailed: $$*\e[0m\n" && \
-				printf "\e[1;31mFailed: $$*\e[0m\n" > $$(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/$1/$$*.$$(BOWERBIRD_TEST/CONSTANT/EXT_FAIL) && \
-					echo && cat $$(BOWERBIRD_TEST/CONSTANT/WORKDIR_LOGS)/$1/$$*.$$(BOWERBIRD_TEST/CONSTANT/EXT_LOG) >&2 && \
+				printf "\e[1;31mFailed: $$*\e[0m\n" > $$(bowerbird-test.constant.workdir-results)/$1/$$*.$$(bowerbird-test.constant.ext-fail) && \
+					echo && cat $$(bowerbird-test.constant.workdir-logs)/$1/$$*.$$(bowerbird-test.constant.ext-log) >&2 && \
 					echo && printf "\e[1;31mFailed: $$*\e[0m\n" >&2 && \
-						(test $$(BOWERBIRD_TEST/CONFIG/FAIL_FAST) -eq 0 || (kill -TERM $$$$(pgrep -f $$(BOWERBIRD_TEST/CONSTANT/PROCESS_TAG)))) && \
-						exit $$(BOWERBIRD_TEST/CONFIG/FAIL_EXIT_CODE) \
+						(test $$(bowerbird-test.config.fail-fast) -eq 0 || (kill -TERM $$$$(pgrep -f $$(bowerbird-test.constant.process-tag)))) && \
+						exit $$(bowerbird-test.config.fail-exit-code) \
 			)
 
-    BOWERBIRD_TEST/CONFIG/FILE_PATTERN_USER := $$(BOWERBIRD_TEST/CONFIG/FILE_PATTERN_DEFAULT)
-    BOWERBIRD_TEST/CONFIG/TARGET_PATTERN_USER := $$(BOWERBIRD_TEST/CONFIG/TARGET_PATTERN_DEFAULT)
+    bowerbird-test.config.file-pattern-user := $$(bowerbird-test.config.file-pattern-default)
+    bowerbird-test.config.target-pattern-user := $$(bowerbird-test.config.target-pattern-default)
 endef
 
 

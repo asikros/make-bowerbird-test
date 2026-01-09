@@ -12,52 +12,52 @@ endef
 
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-shellflags-default,\
-mock-shellflags-target,\
-mock-shellflags-expected,\
-.SHELLFLAGS=-c)
+	test-mock-shellflags-default,\
+	mock-shellflags-target,\
+	mock-shellflags-expected,\
+	.SHELLFLAGS=-c)
 
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-shellflags-multiple-flags,\
-mock-shellflags-target,\
-mock-shellflags-expected,\
-.SHELLFLAGS="-e -u -c")
+	test-mock-shellflags-multiple-flags,\
+	mock-shellflags-target,\
+	mock-shellflags-expected,\
+	.SHELLFLAGS="-e -u -c")
 
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-shellflags-combined,\
-mock-shellflags-target,\
-mock-shellflags-expected,\
-.SHELLFLAGS=-xc)
+	test-mock-shellflags-combined,\
+	mock-shellflags-target,\
+	mock-shellflags-expected,\
+	.SHELLFLAGS=-xc)
 
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-shellflags-errexit-nounset,\
-mock-shellflags-target,\
-mock-shellflags-expected,\
-.SHELLFLAGS="-e -u -c")
+	test-mock-shellflags-errexit-nounset,\
+	mock-shellflags-target,\
+	mock-shellflags-expected,\
+	.SHELLFLAGS="-e -u -c")
 
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-shellflags-verbose,\
-mock-shellflags-target,\
-mock-shellflags-expected,\
-.SHELLFLAGS="-v -x -c")
+	test-mock-shellflags-verbose,\
+	mock-shellflags-target,\
+	mock-shellflags-expected,\
+	.SHELLFLAGS="-v -x -c")
 
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-shellflags-many-flags,\
-mock-shellflags-target,\
-mock-shellflags-expected,\
-.SHELLFLAGS="-e -u -x -v -c")
+	test-mock-shellflags-many-flags,\
+	mock-shellflags-target,\
+	mock-shellflags-expected,\
+	.SHELLFLAGS="-e -u -x -v -c")
 
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-shellflags-euc-combined,\
-mock-shellflags-target,\
-mock-shellflags-expected,\
-.SHELLFLAGS=-euc)
+	test-mock-shellflags-euc-combined,\
+	mock-shellflags-target,\
+	mock-shellflags-expected,\
+	.SHELLFLAGS=-euc)
 
 
 .PHONY: mock-shellflags-single
@@ -69,10 +69,10 @@ echo "single"
 endef
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-shellflags-single-command,\
-mock-shellflags-single,\
-mock-shellflags-single-expected,\
-.SHELLFLAGS="-e -u -c")
+	test-mock-shellflags-single-command,\
+	mock-shellflags-single,\
+	mock-shellflags-single-expected,\
+	.SHELLFLAGS="-e -u -c")
 
 
 .PHONY: mock-shellflags-vars
@@ -85,10 +85,10 @@ echo "Variable: testvalue"
 endef
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-shellflags-with-variables,\
-mock-shellflags-vars,\
-mock-shellflags-vars-expected,\
-.SHELLFLAGS="-e -u -c")
+	test-mock-shellflags-with-variables,\
+	mock-shellflags-vars,\
+	mock-shellflags-vars-expected,\
+	.SHELLFLAGS="-e -u -c")
 
 
 .PHONY: mock-shellflags-special
@@ -102,7 +102,7 @@ echo "with spaces and tabs"
 endef
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-shellflags-special-chars,\
-mock-shellflags-special,\
-mock-shellflags-special-expected,\
-.SHELLFLAGS="-e -c")
+	test-mock-shellflags-special-chars,\
+	mock-shellflags-special,\
+	mock-shellflags-special-expected,\
+	.SHELLFLAGS="-e -c")

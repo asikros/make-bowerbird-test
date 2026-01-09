@@ -16,7 +16,7 @@ WORKDIR_TEST = $(WORKDIR_ROOT)/test/$(NAME)/$(VERSION)
 include make/deps.mk
 include bowerbird.mk
 
- # Targets
+# Targets
 .PHONY: private_clean
 private_clean:
 	@echo "INFO: Cleaning directories:"
@@ -28,4 +28,4 @@ private_clean:
 
 $(call bowerbird::test::pattern-test-files,test*.mk)
 $(call bowerbird::test::pattern-test-targets,test*)
-$(call bowerbird::test::generate-runner,private_test,test/bowerbird-test)
+$(call bowerbird::test::suite,private_test,test/bowerbird-test)

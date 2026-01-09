@@ -45,7 +45,7 @@ endef
 
 # Private implementation (called via $(eval) by bowerbird::test::add-mock-test)
 define __bowerbird::test::add-mock-test-impl
-# Test target - generates expected/results and compares
+# Test target - generates expected/results files and compares them
 .PHONY: $1
 $1: SHELL = /bin/sh
 $1:

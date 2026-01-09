@@ -1,74 +1,74 @@
-$(call bowerbird::test::generate-runner,mock-test-run-test-target-runner,mock-path)
+$(call bowerbird::test::suite,mock-test-run-test-target-runner,mock-path)
 
 
 test-run-test-targets-failing-test-non-zero-exit-status:
 	! $(MAKE) @bowerbird-test/run-test-target/mock-test/$@/failing-test/mock-test-run-test-target-runner \
-			BOWERBIRD_TEST/CONFIG/FAIL_EXIT_CODE=1
+			bowerbird-test.config.fail-exit-code=1
 
 
 test-run-test-targets-failing-test-zero-exit-status:
 	$(MAKE) @bowerbird-test/run-test-target/mock-test/$@/failing-test/mock-test-run-test-target-runner \
-			BOWERBIRD_TEST/CONFIG/FAIL_EXIT_CODE=0
+			bowerbird-test.config.fail-exit-code=0
 
 
 test-run-test-targets-failing-test-generate-log-file:
-	$(call scrub_file,$(BOWERBIRD_TEST/CONSTANT/WORKDIR_LOGS)/mock-test-run-test-target-runner/mock-test/$@/failing-test.$(BOWERBIRD_TEST/CONSTANT/EXT_LOG))
+	$(call scrub_file,$(bowerbird-test.constant.workdir-logs)/mock-test-run-test-target-runner/mock-test/$@/failing-test.$(bowerbird-test.constant.ext-log))
 	$(MAKE) @bowerbird-test/run-test-target/mock-test/$@/failing-test/mock-test-run-test-target-runner \
-			BOWERBIRD_TEST/CONFIG/FAIL_EXIT_CODE=0
-	test -f $(BOWERBIRD_TEST/CONSTANT/WORKDIR_LOGS)/mock-test-run-test-target-runner/mock-test/$@/failing-test.$(BOWERBIRD_TEST/CONSTANT/EXT_LOG)
+			bowerbird-test.config.fail-exit-code=0
+	test -f $(bowerbird-test.constant.workdir-logs)/mock-test-run-test-target-runner/mock-test/$@/failing-test.$(bowerbird-test.constant.ext-log)
 
 
 test-run-test-targets-failing-test-generate-failed-response-file:
-	$(call scrub_file,$(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/failing-test.$(BOWERBIRD_TEST/CONSTANT/EXT_FAIL))
+	$(call scrub_file,$(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/failing-test.$(bowerbird-test.constant.ext-fail))
 	$(MAKE) @bowerbird-test/run-test-target/mock-test/$@/failing-test/mock-test-run-test-target-runner \
-			BOWERBIRD_TEST/CONFIG/FAIL_EXIT_CODE=0
-	test -f $(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/failing-test.$(BOWERBIRD_TEST/CONSTANT/EXT_FAIL)
+			bowerbird-test.config.fail-exit-code=0
+	test -f $(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/failing-test.$(bowerbird-test.constant.ext-fail)
 
 
 test-run-test-targets-failing-test-do-not-generate-passing-response-file:
-	$(call scrub_file,$(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/failing-test.$(BOWERBIRD_TEST/CONSTANT/EXT_PASS))
+	$(call scrub_file,$(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/failing-test.$(bowerbird-test.constant.ext-pass))
 	$(MAKE) @bowerbird-test/run-test-target/mock-test/$@/failing-test/mock-test-run-test-target-runner \
-			BOWERBIRD_TEST/CONFIG/FAIL_EXIT_CODE=0
-	test ! -f $(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/failing-test.$(BOWERBIRD_TEST/CONSTANT/EXT_PASS)
+			bowerbird-test.config.fail-exit-code=0
+	test ! -f $(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/failing-test.$(bowerbird-test.constant.ext-pass)
 
 
 test-run-test-targets-failing-test-response-file-contents:
-	$(call scrub_file,$(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/failing-test.$(BOWERBIRD_TEST/CONSTANT/EXT_FAIL))
+	$(call scrub_file,$(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/failing-test.$(bowerbird-test.constant.ext-fail))
 	$(MAKE) @bowerbird-test/run-test-target/mock-test/$@/failing-test/mock-test-run-test-target-runner \
-			BOWERBIRD_TEST/CONFIG/FAIL_EXIT_CODE=0 2>/dev/null
-	test -f $(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/failing-test.$(BOWERBIRD_TEST/CONSTANT/EXT_FAIL)
+			bowerbird-test.config.fail-exit-code=0 2>/dev/null
+	test -f $(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/failing-test.$(bowerbird-test.constant.ext-fail)
 	$(call bowerbird::test::compare-strings,\
-			$$(cat $(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/failing-test.$(BOWERBIRD_TEST/CONSTANT/EXT_FAIL)),\
+			$$(cat $(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/failing-test.$(bowerbird-test.constant.ext-fail)),\
 			$(shell printf "\e[1;31mFailed: mock-test/test-run-test-targets-failing-test-response-file-contents/failing-test\e[0m"))
 
 
 test-run-test-targets-passing-test-generate-log-file:
-	$(call scrub_file,$(BOWERBIRD_TEST/CONSTANT/WORKDIR_LOGS)/mock-test-run-test-target-runner/mock-test/$@/passing-test.$(BOWERBIRD_TEST/CONSTANT/EXT_LOG))
+	$(call scrub_file,$(bowerbird-test.constant.workdir-logs)/mock-test-run-test-target-runner/mock-test/$@/passing-test.$(bowerbird-test.constant.ext-log))
 	$(MAKE) @bowerbird-test/run-test-target/mock-test/$@/passing-test/mock-test-run-test-target-runner
-	test -f $(BOWERBIRD_TEST/CONSTANT/WORKDIR_LOGS)/mock-test-run-test-target-runner/mock-test/$@/passing-test.$(BOWERBIRD_TEST/CONSTANT/EXT_LOG)
+	test -f $(bowerbird-test.constant.workdir-logs)/mock-test-run-test-target-runner/mock-test/$@/passing-test.$(bowerbird-test.constant.ext-log)
 
 
 test-run-test-targets-passing-test-generate-passing-response-file:
-	$(call scrub_file,$(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/passing-test.$(BOWERBIRD_TEST/CONSTANT/EXT_PASS))
+	$(call scrub_file,$(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/passing-test.$(bowerbird-test.constant.ext-pass))
 	$(MAKE) @bowerbird-test/run-test-target/mock-test/$@/passing-test/mock-test-run-test-target-runner \
-			BOWERBIRD_TEST/CONFIG/FAIL_EXIT_CODE=0
-	test -f $(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/passing-test.$(BOWERBIRD_TEST/CONSTANT/EXT_PASS)
+			bowerbird-test.config.fail-exit-code=0
+	test -f $(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/passing-test.$(bowerbird-test.constant.ext-pass)
 
 
 test-run-test-targets-passing-test-do-not-generate-failing-response-file:
-	$(call scrub_file,$(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/passing-test.$(BOWERBIRD_TEST/CONSTANT/EXT_FAIL))
+	$(call scrub_file,$(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/passing-test.$(bowerbird-test.constant.ext-fail))
 	$(MAKE) @bowerbird-test/run-test-target/mock-test/$@/passing-test/mock-test-run-test-target-runner \
-			BOWERBIRD_TEST/CONFIG/FAIL_EXIT_CODE=0
-	test ! -f $(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/passing-test.$(BOWERBIRD_TEST/CONSTANT/EXT_FAIL)
+			bowerbird-test.config.fail-exit-code=0
+	test ! -f $(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/passing-test.$(bowerbird-test.constant.ext-fail)
 
 
 test-run-test-targets-passing-test-response-file-contents:
-	$(call scrub_file,$(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/passing-test.$(BOWERBIRD_TEST/CONSTANT/EXT_PASS))
+	$(call scrub_file,$(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/passing-test.$(bowerbird-test.constant.ext-pass))
 	$(MAKE) @bowerbird-test/run-test-target/mock-test/$@/passing-test/mock-test-run-test-target-runner \
-			BOWERBIRD_TEST/CONFIG/FAIL_EXIT_CODE=0 2>/dev/null
-	test -f $(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/passing-test.$(BOWERBIRD_TEST/CONSTANT/EXT_PASS)
+			bowerbird-test.config.fail-exit-code=0 2>/dev/null
+	test -f $(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/passing-test.$(bowerbird-test.constant.ext-pass)
 	$(call bowerbird::test::compare-strings,\
-			$$(cat $(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/passing-test.$(BOWERBIRD_TEST/CONSTANT/EXT_PASS)),\
+			$$(cat $(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/passing-test.$(bowerbird-test.constant.ext-pass)),\
 			$(shell printf "\e[1;32mPassed:\e[0m mock-test/test-run-test-targets-passing-test-response-file-contents/passing-test"))
 
 
@@ -78,49 +78,49 @@ test-run-test-targets-undefined-variable-ensure-test-variable-is-undefined:
 
 test-run-test-targets-undefined-variable-non-zero-exit-status:
 	! $(MAKE) @bowerbird-test/run-test-target/mock-test/$@/undefined-variable-test/mock-test-run-test-target-runner \
-			BOWERBIRD_TEST/CONFIG/FAIL_EXIT_CODE=1 2>/dev/null
+			bowerbird-test.config.fail-exit-code=1 2>/dev/null
 
 
 test-run-test-targets-undefined-variable-zero-exit-status:
 	$(MAKE) @bowerbird-test/run-test-target/mock-test/$@/undefined-variable-test/mock-test-run-test-target-runner \
-			BOWERBIRD_TEST/CONFIG/FAIL_EXIT_CODE=0 2>/dev/null
+			bowerbird-test.config.fail-exit-code=0 2>/dev/null
 
 
 test-run-test-targets-undefined-variable-generate-log-file:
-	$(call scrub_file,$(BOWERBIRD_TEST/CONSTANT/WORKDIR_LOGS)/mock-test-run-test-target-runner/mock-test/$@/undefined-variable-test.$(BOWERBIRD_TEST/CONSTANT/EXT_LOG))
+	$(call scrub_file,$(bowerbird-test.constant.workdir-logs)/mock-test-run-test-target-runner/mock-test/$@/undefined-variable-test.$(bowerbird-test.constant.ext-log))
 	$(MAKE) @bowerbird-test/run-test-target/mock-test/$@/undefined-variable-test/mock-test-run-test-target-runner \
-			BOWERBIRD_TEST/CONFIG/FAIL_EXIT_CODE=0 2>/dev/null
-	test -f $(BOWERBIRD_TEST/CONSTANT/WORKDIR_LOGS)/mock-test-run-test-target-runner/mock-test/$@/undefined-variable-test.$(BOWERBIRD_TEST/CONSTANT/EXT_LOG)
+			bowerbird-test.config.fail-exit-code=0 2>/dev/null
+	test -f $(bowerbird-test.constant.workdir-logs)/mock-test-run-test-target-runner/mock-test/$@/undefined-variable-test.$(bowerbird-test.constant.ext-log)
 
 
 test-run-test-targets-undefined-variable-test-generate-failed-response-file:
-	$(call scrub_file,$(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/undefined-variable-test.$(BOWERBIRD_TEST/CONSTANT/EXT_FAIL))
+	$(call scrub_file,$(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/undefined-variable-test.$(bowerbird-test.constant.ext-fail))
 	$(MAKE) @bowerbird-test/run-test-target/mock-test/$@/undefined-variable-test/mock-test-run-test-target-runner \
-			BOWERBIRD_TEST/CONFIG/FAIL_EXIT_CODE=0 2>/dev/null
-	test -f $(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/undefined-variable-test.$(BOWERBIRD_TEST/CONSTANT/EXT_FAIL)
+			bowerbird-test.config.fail-exit-code=0 2>/dev/null
+	test -f $(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/undefined-variable-test.$(bowerbird-test.constant.ext-fail)
 
 
 test-run-test-targets-undefined-variable-test-do-not-generate-passing-response-file:
-	$(call scrub_file,$(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/undefined-variable-test.$(BOWERBIRD_TEST/CONSTANT/EXT_PASS))
+	$(call scrub_file,$(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/undefined-variable-test.$(bowerbird-test.constant.ext-pass))
 	$(MAKE) @bowerbird-test/run-test-target/mock-test/$@/undefined-variable-test/mock-test-run-test-target-runner \
-			BOWERBIRD_TEST/CONFIG/FAIL_EXIT_CODE=0 2>/dev/null
-	test ! -f $(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/undefined-variable-test.$(BOWERBIRD_TEST/CONSTANT/EXT_PASS)
+			bowerbird-test.config.fail-exit-code=0 2>/dev/null
+	test ! -f $(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/undefined-variable-test.$(bowerbird-test.constant.ext-pass)
 
 
 test-run-test-targets-undefined-variable-test-response-file-contents:
-	$(call scrub_file,$(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/undefined-variable-test.$(BOWERBIRD_TEST/CONSTANT/EXT_FAIL))
+	$(call scrub_file,$(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/undefined-variable-test.$(bowerbird-test.constant.ext-fail))
 	$(MAKE) @bowerbird-test/run-test-target/mock-test/$@/undefined-variable-test/mock-test-run-test-target-runner \
-			BOWERBIRD_TEST/CONFIG/FAIL_EXIT_CODE=0 2>/dev/null
-	test -f $(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/undefined-variable-test.$(BOWERBIRD_TEST/CONSTANT/EXT_FAIL)
+			bowerbird-test.config.fail-exit-code=0 2>/dev/null
+	test -f $(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/undefined-variable-test.$(bowerbird-test.constant.ext-fail)
 	$(call bowerbird::test::compare-strings,\
-			$$(cat $(BOWERBIRD_TEST/CONSTANT/WORDDIR_RESULTS)/mock-test-run-test-target-runner/mock-test/$@/undefined-variable-test.$(BOWERBIRD_TEST/CONSTANT/EXT_FAIL)),\
+			$$(cat $(bowerbird-test.constant.workdir-results)/mock-test-run-test-target-runner/mock-test/$@/undefined-variable-test.$(bowerbird-test.constant.ext-fail)),\
 			$(shell printf "\e[1;31mFailed: mock-test/test-run-test-targets-undefined-variable-test-response-file-contents/undefined-variable-test\e[0m"))
 
 
 test-run-test-targets-hierarchical-name-generate-log-file:
-	$(call scrub_file,$(BOWERBIRD_TEST/CONSTANT/WORKDIR_LOGS)/mock-test-run-test-target-runner/mock-test/$@/alpha/beta/passing-test.$(BOWERBIRD_TEST/CONSTANT/EXT_LOG))
+	$(call scrub_file,$(bowerbird-test.constant.workdir-logs)/mock-test-run-test-target-runner/mock-test/$@/alpha/beta/passing-test.$(bowerbird-test.constant.ext-log))
 	$(MAKE) @bowerbird-test/run-test-target/mock-test/$@/alpha/beta/passing-test/mock-test-run-test-target-runner
-	test -f $(BOWERBIRD_TEST/CONSTANT/WORKDIR_LOGS)/mock-test-run-test-target-runner/mock-test/$@/alpha/beta/passing-test.$(BOWERBIRD_TEST/CONSTANT/EXT_LOG)
+	test -f $(bowerbird-test.constant.workdir-logs)/mock-test-run-test-target-runner/mock-test/$@/alpha/beta/passing-test.$(bowerbird-test.constant.ext-log)
 
 
 mock-test/%/passing-test: mock-test/force

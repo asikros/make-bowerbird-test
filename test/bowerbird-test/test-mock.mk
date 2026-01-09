@@ -11,9 +11,9 @@ echo "Done"
 endef
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-basic,\
-mock-test-simple-target,\
-mock-basic-expected,)
+	test-mock-basic,\
+	mock-test-simple-target,\
+	mock-basic-expected,)
 
 
 .PHONY: mock-test-variables
@@ -29,9 +29,9 @@ mkdir -p /tmp/mockdir
 endef
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-with-variables,\
-mock-test-variables,\
-mock-variables-expected,)
+	test-mock-with-variables,\
+	mock-test-variables,\
+	mock-variables-expected,)
 
 
 .PHONY: mock-test-multi-commands
@@ -51,9 +51,9 @@ echo "Step 5"
 endef
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-multiple-commands,\
-mock-test-multi-commands,\
-mock-multi-commands-expected,)
+	test-mock-multiple-commands,\
+	mock-test-multi-commands,\
+	mock-multi-commands-expected,)
 
 
 .PHONY: mock-multiline-basic
@@ -67,9 +67,9 @@ echo "Line 2"
 endef
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-multiline-basic,\
-mock-multiline-basic,\
-mock-multiline-basic-expected,)
+	test-mock-multiline-basic,\
+	mock-multiline-basic,\
+	mock-multiline-basic-expected,)
 
 
 .PHONY: mock-multiline-indented
@@ -81,9 +81,9 @@ echo "Indented"
 endef
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-multiline-indented,\
-mock-multiline-indented,\
-mock-multiline-indented-expected,)
+	test-mock-multiline-indented,\
+	mock-multiline-indented,\
+	mock-multiline-indented-expected,)
 
 
 .PHONY: mock-multiline-complex
@@ -101,9 +101,9 @@ echo "Done with directories"
 endef
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-multiline-complex,\
-mock-multiline-complex,\
-mock-multiline-complex-expected,)
+	test-mock-multiline-complex,\
+	mock-multiline-complex,\
+	mock-multiline-complex-expected,)
 
 
 .PHONY: mock-multiline-with-vars-inner
@@ -121,10 +121,10 @@ mock-multiline-with-vars-target:
 endif
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-multiline-with-vars,\
-mock-multiline-with-vars-target,\
-mock-multiline-with-vars-expected,\
-__TEST_MULTILINE_VARS=1)
+	test-mock-multiline-with-vars,\
+	mock-multiline-with-vars-target,\
+	mock-multiline-with-vars-expected,\
+	__TEST_MULTILINE_VARS=1)
 
 
 .PHONY: mock-test-empty
@@ -134,9 +134,9 @@ define mock-empty-expected
 endef
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-empty-output,\
-mock-test-empty,\
-mock-empty-expected,)
+	test-mock-empty-output,\
+	mock-test-empty,\
+	mock-empty-expected,)
 
 
 .PHONY: mock-test-no-at
@@ -148,9 +148,9 @@ echo "No at prefix"
 endef
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-without-at-prefix,\
-mock-test-no-at,\
-mock-no-at-expected,)
+	test-mock-without-at-prefix,\
+	mock-test-no-at,\
+	mock-no-at-expected,)
 
 
 .PHONY: mock-test-mixed
@@ -166,9 +166,9 @@ echo "With at again"
 endef
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-mixed-at-prefix,\
-mock-test-mixed,\
-mock-mixed-expected,)
+	test-mock-mixed-at-prefix,\
+	mock-test-mixed,\
+	mock-mixed-expected,)
 
 
 .PHONY: mock-test-special-chars
@@ -182,9 +182,9 @@ echo "with spaces and tabs"
 endef
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-special-chars-quotes,\
-mock-test-special-chars,\
-mock-special-chars-expected,)
+	test-mock-special-chars-quotes,\
+	mock-test-special-chars,\
+	mock-special-chars-expected,)
 
 
 .PHONY: mock-test-dollars
@@ -199,9 +199,9 @@ echo "Literal: $$HOME"
 endef
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-dollar-signs,\
-mock-test-dollars,\
-mock-dollars-expected,)
+	test-mock-dollar-signs,\
+	mock-test-dollars,\
+	mock-dollars-expected,)
 
 
 .PHONY: mock-test-dir-creation
@@ -213,9 +213,9 @@ echo "Testing directory creation"
 endef
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-results-directory-creation,\
-mock-test-dir-creation,\
-mock-dir-creation-expected,)
+	test-mock-results-directory-creation,\
+	mock-test-dir-creation,\
+	mock-dir-creation-expected,)
 
 
 .PHONY: mock-test-appending
@@ -231,9 +231,9 @@ echo "Third"
 endef
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-results-appending,\
-mock-test-appending,\
-mock-appending-expected,)
+	test-mock-results-appending,\
+	mock-test-appending,\
+	mock-appending-expected,)
 
 
 .PHONY: mock-test-long-command
@@ -245,9 +245,9 @@ echo "This is a very long command line with many arguments that should still be 
 endef
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-long-command-line,\
-mock-test-long-command,\
-mock-long-command-expected,)
+	test-mock-long-command-line,\
+	mock-test-long-command,\
+	mock-long-command-expected,)
 
 
 .PHONY: mock-test-auto-phony
@@ -259,6 +259,6 @@ echo "Auto phony test"
 endef
 
 $(call bowerbird::test::add-mock-test,\
-test-mock-automatic-phony,\
-mock-test-auto-phony,\
-mock-auto-phony-expected,)
+	test-mock-automatic-phony,\
+	mock-test-auto-phony,\
+	mock-auto-phony-expected,)

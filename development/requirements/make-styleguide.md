@@ -11,12 +11,51 @@ BOWERBIRD_COMMA := ,
 WORKDIR_TEST := .make/test
 ```
 
+### Variables
+
+**Public Variables (user-configurable or frequently referenced):**
+Use dot-notation with lowercase and hyphens:
+```makefile
+bowerbird-test.config.fail-exit-code := 0
+bowerbird-test.constant.ext-pass := pass
+bowerbird-test.system.makepid := $(shell echo $$PPID)
+```
+
+**Internal Variables (framework-internal state):**
+Use slash-notation with uppercase:
+```makefile
+BOWERBIRD_TEST/FILES/my-suite := $(wildcard ...)
+BOWERBIRD_TEST/TARGETS/my-suite := test-a test-b
+BOWERBIRD_TEST/CACHE/TESTS_PREV_FAILED/my-suite := test-c
+```
+
+This distinction makes it clear which variables are part of the public API.
+
 ### Namespaced Functions/Macros
 Use `namespace::category::function-name` with kebab-case:
 ```makefile
 bowerbird::test::compare-strings
 bowerbird::test::find-test-files
+bowerbird::test::suite
 ```
+
+### File, Macro, and Test Naming Consistency
+
+Maintain consistent naming across related files, primary macros, and test files:
+
+**Pattern:**
+- Source file: `bowerbird-<component>.mk`
+- Primary macro: `bowerbird::test::<component>` or `bowerbird::<component>`
+- Test file: `test-<component>.mk`
+
+**Examples:**
+| Source File | Primary Macro | Test File |
+|------------|---------------|-----------|
+| `bowerbird-suite.mk` | `bowerbird::test::suite` | `test-suite.mk` |
+| `bowerbird-compare.mk` | `bowerbird::test::compare-*` | `test-compare-*.mk` |
+| `bowerbird-mock.mk` | `bowerbird::test::add-mock-test` | `test-mock.mk` |
+
+This consistency makes the codebase more navigable and predictable.
 
 ### Targets
 - **Test targets**: Use `test-` prefix with descriptive kebab-case names
@@ -92,10 +131,23 @@ test-compare-strings-case-sensitive:
 ### Indentation
 - Use **tabs** for recipe lines (Make requirement)
 - Use **tabs** for indentation within `define` blocks
-- Align continuation lines for readability:
+- Use **tabs** for continuation lines in multi-line function calls:
 ```makefile
+# Good - continuation lines indented with tabs
+$(call bowerbird::test::add-mock-test,\
+	test-mock-basic,\
+	mock-test-target,\
+	mock-expected-output,)
+
+# Good - multi-line call in recipe also uses tabs
 test-example:
 	$(call bowerbird::test::compare-sets,\
 		$(call find-files,path/to/search),\
 		expected-file-1 expected-file-2 expected-file-3)
+
+# Bad - no indentation on continuation lines
+$(call bowerbird::test::add-mock-test,\
+test-mock-basic,\
+mock-test-target,\
+mock-expected-output,)
 ```

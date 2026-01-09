@@ -1,6 +1,6 @@
 $(call bowerbird::test::pattern-test-files,mock*.mk)
 $(call bowerbird::test::pattern-test-targets,test*alpha*)
-$(call bowerbird::test::generate-runner,mock-test-pattern-test-targets-alpha-runner,test/mock-tests)
+$(call bowerbird::test::suite,mock-test-pattern-test-targets-alpha-runner,test/mock-tests)
 test-pattern-test-targets-alpha:
 	$(call bowerbird::test::compare-sets,\
 			$(sort $(BOWERBIRD_TEST/TARGETS/mock-$@-runner)),\
@@ -9,7 +9,7 @@ test-pattern-test-targets-alpha:
 
 $(call bowerbird::test::pattern-test-files,mock*.mk)
 $(call bowerbird::test::pattern-test-targets,test*beta*)
-$(call bowerbird::test::generate-runner,mock-test-pattern-test-targets-beta-runner,test/mock-tests)
+$(call bowerbird::test::suite,mock-test-pattern-test-targets-beta-runner,test/mock-tests)
 test-pattern-test-targets-beta:
 	$(call bowerbird::test::compare-sets,\
 			$(sort $(BOWERBIRD_TEST/TARGETS/mock-$@-runner)),\
@@ -18,7 +18,7 @@ test-pattern-test-targets-beta:
 
 $(call bowerbird::test::pattern-test-files,mock*.mk)
 $(call bowerbird::test::pattern-test-targets,test*gamma*)
-$(call bowerbird::test::generate-runner,mock-test-pattern-test-targets-gamma-runner,test/mock-tests)
+$(call bowerbird::test::suite,mock-test-pattern-test-targets-gamma-runner,test/mock-tests)
 test-pattern-test-targets-gamma:
 	$(call bowerbird::test::compare-sets,\
 			$(sort $(BOWERBIRD_TEST/TARGETS/mock-$@-runner)),\
@@ -27,6 +27,6 @@ test-pattern-test-targets-gamma:
 
 $(call bowerbird::test::pattern-test-files,mock*.mk)
 $(call bowerbird::test::pattern-test-targets,no-match)
-$(call bowerbird::test::generate-runner,mock-test-pattern-test-targets-no-match-runner,test/mock-tests)
+$(call bowerbird::test::suite,mock-test-pattern-test-targets-no-match-runner,test/mock-tests)
 test-pattern-test-targets-no-match:
 	$(call bowerbird::test::compare-sets,$(sort $(BOWERBIRD_TEST/TARGETS/mock-$@-runner)),)

@@ -31,8 +31,8 @@ define bowerbird::test::find-test-targets
 $(sort $(shell cat $1 | \
     sed -e ':a' -e '/\\$$/N' -e 's/\\\n//g' -e 'ta' | \
     sed -n \
-        -e 's/\(^$(subst *,[^:]*,$(BOWERBIRD_TEST/CONFIG/TARGET_PATTERN_USER))\):.*/\1/p' \
-        -e 's/^.*bowerbird::test::add-mock-test$(BOWERBIRD_COMMA)[ 	]*\($(subst *,[^$(BOWERBIRD_COMMA)]*,$(BOWERBIRD_TEST/CONFIG/TARGET_PATTERN_USER))\).*/\1/p' \
+        -e 's/\(^$(subst *,[^:]*,$(bowerbird-test.config.target-pattern-user))\):.*/\1/p' \
+        -e 's/^.*bowerbird::test::add-mock-test$(BOWERBIRD_COMMA)[ 	]*\($(subst *,[^$(BOWERBIRD_COMMA)]*,$(bowerbird-test.config.target-pattern-user))\).*/\1/p' \
     2>/dev/null))
 endef
 
@@ -45,7 +45,7 @@ endef
 #   Args:
 #       path: Path to the cached results directory.
 #       result: The desired test result. Typically one of the following values from:
-#			BOWERBIRD_TEST/CONSTANT/EXT_PASS or BOWERBIRD_TEST/CONSTANT/EXT_FAIL.
+#			bowerbird-test.constant.ext-pass or bowerbird-test.constant.ext-fail.
 #
 #	Error:
 #		Throws an error if path empty.
@@ -78,5 +78,5 @@ endef
 #
 define bowerbird::test::find-failed-cached-test-results
 $$(if $1,,$$(error ERROR: bowerbird::test::find-failed-cached-test-results, no path specified)) \
-$(call bowerbird::test::find-cached-test-results,$1,$$(BOWERBIRD_TEST/CONSTANT/EXT_FAIL))
+$(call bowerbird::test::find-cached-test-results,$1,$$(bowerbird-test.constant.ext-fail))
 endef

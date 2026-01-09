@@ -201,6 +201,21 @@ bowerbird-test/force:
 	@:
 
 .PHONY: bowerbird-test/ensure-mock-shell-executable
-bowerbird-test/ensure-mock-shell-executable:
-	@chmod +x $(BOWERBIRD_MOCK_SHELL) 2>/dev/null || true
-	@xattr -d com.apple.provenance $(BOWERBIRD_MOCK_SHELL) 2>/dev/null || true
+bowerbird-test/ensure-mock-shell-executable: $(BOWERBIRD_MOCK_SHELL)
+
+$(BOWERBIRD_MOCK_SHELL): $(BOWERBIRD_MOCK_SHELL_REAL)
+	@printf '%s\n' \
+		'#!/bin/sh' \
+		'# Wrapper to invoke real mock shell through /bin/sh to bypass macOS quarantine' \
+		'exec /bin/sh $(BOWERBIRD_MOCK_SHELL_REAL) "$$@"' \
+		> $@
+	@chmod +x $@
+
+$(BOWERBIRD_MOCK_SHELL_REAL):
+	@printf '%s\n' \
+		'#!/bin/sh' \
+		'# Extract command (always last argument after SHELLFLAGS)' \
+		'eval "COMMAND=\"\$${$$#}\""' \
+		'echo "$$COMMAND" >> "$${BOWERBIRD_MOCK_RESULTS:?BOWERBIRD_MOCK_RESULTS must be set}"' \
+		> $@
+	@chmod +x $@

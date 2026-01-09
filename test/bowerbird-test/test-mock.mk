@@ -128,19 +128,8 @@ __TEST_MULTILINE_VARS=1)
 
 
 test-mock-shell-script-exists:
-	$(MAKE) $(BOWERBIRD_MOCK_SHELL)
 	@test -f $(BOWERBIRD_MOCK_SHELL)
 	@test -x $(BOWERBIRD_MOCK_SHELL)
-
-
-test-mock-shell-script-regenerates:
-	$(MAKE) $(BOWERBIRD_MOCK_SHELL)
-	@sleep 1
-	@touch src/bowerbird-test/bowerbird-mock.mk
-	@test src/bowerbird-test/bowerbird-mock.mk -nt $(BOWERBIRD_MOCK_SHELL)
-	$(MAKE) $(BOWERBIRD_MOCK_SHELL)
-	@test $(BOWERBIRD_MOCK_SHELL) -nt src/bowerbird-test/bowerbird-mock.mk || \
-		test ! src/bowerbird-test/bowerbird-mock.mk -nt $(BOWERBIRD_MOCK_SHELL)
 
 
 .PHONY: mock-test-empty

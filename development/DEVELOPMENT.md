@@ -41,7 +41,7 @@ development/
 │   ├── draft/      # Proposals under active development
 │   ├── accepted/   # Proposals accepted and implemented
 │   ├── rejected/   # Proposals that were rejected (with rationale)
-│   └── README.md   # Proposal lifecycle and format guidelines
+│   └── PROPOSALS.md # Proposal lifecycle and format guidelines
 ├── requirements/   # Code standards and style guides
 ├── workflows/      # Development process documentation
 └── DEVELOPMENT.md  # This file
@@ -49,7 +49,7 @@ development/
 
 ## Proposals
 
-For information about creating and managing proposals, see **[proposals/README.md](proposals/README.md)**.
+For information about creating and managing proposals, see **[proposals/PROPOSALS.md](proposals/PROPOSALS.md)**.
 
 This includes:
 - Proposal lifecycle (Draft → Accepted/Rejected)

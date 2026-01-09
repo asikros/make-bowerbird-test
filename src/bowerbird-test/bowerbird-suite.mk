@@ -8,17 +8,17 @@ bowerbird-test.config.file-pattern-user = $(bowerbird-test.config.file-pattern-d
 bowerbird-test.config.target-pattern-default = test*
 bowerbird-test.config.target-pattern-user = $(bowerbird-test.config.target-pattern-default)
 
-bowerbird-test.system.makepid := $(shell echo $$PPID)
-
-bowerbird-test.constant.process-tag = __BOWERBIRD_TEST_PROCESS_TAG__=$(bowerbird-test.system.makepid)
 bowerbird-test.constant.ext-fail = fail
 bowerbird-test.constant.ext-log = log
 bowerbird-test.constant.ext-pass = pass
+bowerbird-test.constant.process-tag = __BOWERBIRD_TEST_PROCESS_TAG__=$(bowerbird-test.system.makepid)
 bowerbird-test.constant.subdir-cache = .bowerbird
 bowerbird-test.constant.undefined-variable-warning = warning: undefined variable
-bowerbird-test.constant.workdir-results = $(bowerbird-test.constant.workdir-root)/$(bowerbird-test.constant.subdir-cache)
 bowerbird-test.constant.workdir-logs = $(bowerbird-test.constant.workdir-root)/$(bowerbird-test.constant.subdir-cache)
+bowerbird-test.constant.workdir-results = $(bowerbird-test.constant.workdir-root)/$(bowerbird-test.constant.subdir-cache)
 bowerbird-test.constant.workdir-root = $(WORKDIR_TEST)
+
+bowerbird-test.system.makepid := $(shell echo $$PPID)
 
 
 # bowerbird::test::pattern-test-files,<patterns>
@@ -89,14 +89,36 @@ $(eval $(call __bowerbird::test::suite-impl,$1,$2))
 endef
 
 
-# Master implementation that orchestrates the test suite
-define __bowerbird::test::suite-impl
+# __bowerbird::test::validate-args,<target>,<path>
+#
+#   Validates that target and path arguments are non-empty.
+#   Returns: Makefile syntax for validation checks
+#
+define __bowerbird::test::validate-args
 $$(if $1,,$$(error ERROR: missing target in '$$$$(call bowerbird::test::suite,<target>,<path>)))
 $$(if $2,,$$(error ERROR: missing path in '$$$$(call bowerbird::test::suite,$1,)))
+endef
+
+
+# __bowerbird::test::discover-files,<suite-name>,<path>,<pattern>
+#
+#   Discovers test files and sets BOWERBIRD_TEST/FILES/<suite-name>.
+#   Returns: Makefile syntax for file discovery
+#
+define __bowerbird::test::discover-files
 ifndef BOWERBIRD_TEST/FILES/$1
-export BOWERBIRD_TEST/FILES/$1 := $$(call bowerbird::test::find-test-files,$2,$$(bowerbird-test.config.file-pattern-user))
-$$(if $$(BOWERBIRD_TEST/FILES/$1),,$$(warning WARNING: No test files found in '$2' matching '$$(bowerbird-test.config.file-pattern-user)'))
+export BOWERBIRD_TEST/FILES/$1 := $$(call bowerbird::test::find-test-files,$2,$3)
+$$(if $$(BOWERBIRD_TEST/FILES/$1),,$$(warning WARNING: No test files found in '$2' matching '$3'))
 endif
+endef
+
+
+# __bowerbird::test::discover-targets,<suite-name>
+#
+#   Includes test files and discovers test targets.
+#   Returns: Makefile syntax for target discovery
+#
+define __bowerbird::test::discover-targets
 ifneq (,$$(BOWERBIRD_TEST/FILES/$1))
 ifeq ($$(filter $$(MAKEFILE_LIST),$$(BOWERBIRD_TEST/FILES/$1)),)
 include $$(BOWERBIRD_TEST/FILES/$1)
@@ -107,6 +129,15 @@ endif
 else
 BOWERBIRD_TEST/TARGETS/$1 =
 endif
+endef
+
+
+# __bowerbird::test::discover-failed-tests,<suite-name>
+#
+#   Finds previously failed tests if fail-first is enabled.
+#   Returns: Makefile syntax for failed test discovery
+#
+define __bowerbird::test::discover-failed-tests
 ifneq ($$(bowerbird-test.config.fail-first),0)
 ifndef BOWERBIRD_TEST/CACHE/TESTS_PREV_FAILED/$1
 export BOWERBIRD_TEST/CACHE/TESTS_PREV_FAILED/$1 := $(call bowerbird::test::find-failed-cached-test-results,$$(bowerbird-test.constant.workdir-results)/$1,$$(bowerbird-test.constant.ext-fail))
@@ -114,9 +145,26 @@ endif
 else
 BOWERBIRD_TEST/CACHE/TESTS_PREV_FAILED/$1 =
 endif
+endef
+
+
+# __bowerbird::test::split-tests,<suite-name>
+#
+#   Splits tests into primary (failed) and secondary (passing) lists.
+#   Returns: Makefile syntax for test list generation
+#
+define __bowerbird::test::split-tests
 export BOWERBIRD_TEST/TARGETS_PRIMARY/$1 := $$(foreach target,$$(filter $$(BOWERBIRD_TEST/CACHE/TESTS_PREV_FAILED/$1),$$(BOWERBIRD_TEST/TARGETS/$1)),@bowerbird-test/run-test-target/$$(target)/$1)
 export BOWERBIRD_TEST/TARGETS_SECONDARY/$1 := $$(foreach target,$$(filter-out $$(BOWERBIRD_TEST/CACHE/TESTS_PREV_FAILED/$1),$$(BOWERBIRD_TEST/TARGETS/$1)),@bowerbird-test/run-test-target/$$(target)/$1)
+endef
 
+
+# __bowerbird::test::generate-runner-targets,<suite-name>
+#
+#   Generates all runner helper targets (list, clean, run, report, main).
+#   Returns: Makefile syntax for runner targets
+#
+define __bowerbird::test::generate-runner-targets
 .PHONY: bowerbird-test/runner/list-discovered-tests/$1
 bowerbird-test/runner/list-discovered-tests/$1:
 	@echo "Discovered tests"; $$(foreach t,$$(sort $$(BOWERBIRD_TEST/TARGETS/$1)),echo "    $$t";)
@@ -167,8 +215,15 @@ ifneq ($$(BOWERBIRD_TEST/TARGETS_SECONDARY/$1),)
 	@$(MAKE) bowerbird-test/runner/run-secondary-tests/$1
 endif
 	@$(MAKE) bowerbird-test/runner/report-results/$1
+endef
 
 
+# __bowerbird::test::generate-pattern-rule,<suite-name>
+#
+#   Generates the pattern rule for running individual tests.
+#   Returns: Makefile syntax for test execution pattern rule
+#
+define __bowerbird::test::generate-pattern-rule
 @bowerbird-test/run-test-target/%/$1: bowerbird-test/force
 	@mkdir -p $$(dir $$(bowerbird-test.constant.workdir-logs)/$1/$$*)
 	@mkdir -p $$(dir $$(bowerbird-test.constant.workdir-results)/$1/$$*)
@@ -190,9 +245,30 @@ endif
 					(test $$(bowerbird-test.config.fail-fast) -eq 0 || (kill -TERM $$$$(pgrep -f $$(bowerbird-test.constant.process-tag)))) && \
 					exit $$(bowerbird-test.config.fail-exit-code) \
 		)
+endef
 
+
+# __bowerbird::test::reset-config,<suite-name>
+#
+#   Resets pattern configuration to defaults.
+#   Returns: Makefile syntax for config reset
+#
+define __bowerbird::test::reset-config
 bowerbird-test.config.file-pattern-user := $$(bowerbird-test.config.file-pattern-default)
 bowerbird-test.config.target-pattern-user := $$(bowerbird-test.config.target-pattern-default)
+endef
+
+
+# Master implementation that orchestrates the test suite by calling all sub-macros
+define __bowerbird::test::suite-impl
+$(call __bowerbird::test::validate-args,$1,$2)
+$(call __bowerbird::test::discover-files,$1,$2,$(bowerbird-test.config.file-pattern-user))
+$(call __bowerbird::test::discover-targets,$1)
+$(call __bowerbird::test::discover-failed-tests,$1)
+$(call __bowerbird::test::split-tests,$1)
+$(call __bowerbird::test::generate-runner-targets,$1)
+$(call __bowerbird::test::generate-pattern-rule,$1)
+$(call __bowerbird::test::reset-config)
 endef
 
 

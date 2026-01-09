@@ -32,12 +32,29 @@ BOWERBIRD_TEST/CACHE/TESTS_PREV_FAILED/my-suite := test-c
 This distinction makes it clear which variables are part of the public API.
 
 ### Namespaced Functions/Macros
-Use `namespace::category::function-name` with kebab-case:
+
+Use `family::library::verb-noun` pattern with kebab-case:
+- **family**: Project family (e.g., `bowerbird`)
+- **library**: Component/library (e.g., `test`, `git`, `help`)
+- **verb-noun**: Action in imperative form (e.g., `compare-strings`, `find-files`, `add-mock-test`)
+
+**Public macros:**
 ```makefile
 bowerbird::test::compare-strings
 bowerbird::test::find-test-files
 bowerbird::test::suite
+bowerbird::test::add-mock-test
 ```
+
+**Private macros** (prefixed with `__`):
+```makefile
+__bowerbird::test::suite-impl
+__bowerbird::test::validate-args
+__bowerbird::test::discover-files
+__bowerbird::test::generate-runner-targets
+```
+
+The imperative verb-noun form makes it clear what action the macro performs.
 
 ### File, Macro, and Test Naming Consistency
 

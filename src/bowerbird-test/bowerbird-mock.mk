@@ -23,14 +23,15 @@ BOWERBIRD_MOCK_MK := $(lastword $(MAKEFILE_LIST))
 $(BOWERBIRD_MOCK_SHELL): SHELL = /bin/sh
 $(BOWERBIRD_MOCK_SHELL): $(BOWERBIRD_MOCK_MK)
 	@mkdir -p $(dir $@)
-	@printf '%s\n' \
+	@{ printf '%s\n' \
 		'#!/bin/sh' \
 		'# Extract command (always last argument after SHELLFLAGS)' \
 		'eval "COMMAND=\"\$${$$#}\""' \
 		'echo "$$COMMAND" >> "$${BOWERBIRD_MOCK_RESULTS:?BOWERBIRD_MOCK_RESULTS must be set}"' \
-		> $@
-	@chmod +x $@
-	@xattr -d com.apple.provenance $@ 2>/dev/null || true
+		> $@.tmp && \
+	chmod +x $@.tmp && \
+	xattr -d com.apple.provenance $@.tmp 2>/dev/null || true; } && \
+	mv $@.tmp $@
 
 # KEY MECHANISM: Target-specific SHELL override
 # When BOWERBIRD_MOCK_RESULTS is set (by test runner), all targets use mock shell

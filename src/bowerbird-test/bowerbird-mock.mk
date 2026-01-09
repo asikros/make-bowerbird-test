@@ -11,7 +11,7 @@ WORKDIR_TEST ?= $(error ERROR: Undefined variable WORKDIR_TEST)
 # When BOWERBIRD_MOCK_RESULTS is set (by test runner), all targets use mock shell
 # This ONLY affects recipe execution, not $(shell) calls during parsing
 ifdef BOWERBIRD_MOCK_RESULTS
-%: SHELL = $(BOWERBIRD_MOCK_SHELL)
+%: SHELL = $(BOWERBIRD_MOCK_SHELL_INLINE)
 endif
 
 # bowerbird::test::add-mock-test

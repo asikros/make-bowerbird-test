@@ -156,7 +156,7 @@ define __bowerbird::test::generate-runner-impl
 						$$(BOWERBIRD_TEST/TARGETS/$1)) passed\e[0m\n\n"
 
     .PHONY: $1
-    $1: bowerbird-test/ensure-mock-shell-executable
+    $1:
 		@test "$(BOWERBIRD_TEST/CONSTANT/EXT_FAIL)" != "$(BOWERBIRD_TEST/CONSTANT/EXT_PASS)"
 		@$(MAKE) bowerbird-test/runner/list-discovered-tests/$1
 		@$(MAKE) bowerbird-test/runner/clean-results/$1
@@ -199,23 +199,3 @@ endef
 .PHONY: bowerbird-test/force
 bowerbird-test/force:
 	@:
-
-.PHONY: bowerbird-test/ensure-mock-shell-executable
-bowerbird-test/ensure-mock-shell-executable: $(BOWERBIRD_MOCK_SHELL)
-
-$(BOWERBIRD_MOCK_SHELL): $(BOWERBIRD_MOCK_SHELL_REAL)
-	@printf '%s\n' \
-		'#!/bin/sh' \
-		'# Wrapper to invoke real mock shell through /bin/sh to bypass macOS quarantine' \
-		'exec /bin/sh $(BOWERBIRD_MOCK_SHELL_REAL) "$$@"' \
-		> $@
-	@chmod +x $@
-
-$(BOWERBIRD_MOCK_SHELL_REAL):
-	@printf '%s\n' \
-		'#!/bin/sh' \
-		'# Extract command (always last argument after SHELLFLAGS)' \
-		'eval "COMMAND=\"\$${$$#}\""' \
-		'echo "$$COMMAND" >> "$${BOWERBIRD_MOCK_RESULTS:?BOWERBIRD_MOCK_RESULTS must be set}"' \
-		> $@
-	@chmod +x $@

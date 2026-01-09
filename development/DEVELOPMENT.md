@@ -37,54 +37,21 @@ make test-<name>
 
 ```
 development/
-├── proposals/
+├── proposals/      # Design documents and feature specifications
 │   ├── draft/      # Proposals under active development
 │   ├── accepted/   # Proposals accepted and implemented
-│   └── rejected/   # Proposals that were rejected (with rationale)
+│   ├── rejected/   # Proposals that were rejected (with rationale)
+│   └── README.md   # Proposal lifecycle and format guidelines
 ├── requirements/   # Code standards and style guides
 ├── workflows/      # Development process documentation
 └── DEVELOPMENT.md  # This file
 ```
 
-## Proposal Lifecycle
+## Proposals
 
-### 1. Draft
-New proposals start in `proposals/draft/`. These are under active development and review.
+For information about creating and managing proposals, see **[proposals/README.md](proposals/README.md)**.
 
-**Status**: `Draft`
-
-### 2. Accepted
-Once a proposal is reviewed, approved, and implemented, it moves to `proposals/accepted/`.
-
-**Status**: `Accepted`
-
-### 3. Rejected
-If a proposal is not accepted, it moves to `proposals/rejected/` with a rationale section explaining why.
-
-**Status**: `Rejected`
-
-## Proposal Format
-
-All proposals must include this header:
-
-````markdown
-```
-Status:   Draft | Accepted | Rejected
-Project:  make-bowerbird-test
-Created:  YYYY-MM-DD
-Author:   Name or Team
-```
-
----
-````
-
-## Current Proposals
-
-### Draft
-_(None yet)_
-
-### Accepted
-- `01-mock-shell-testing.md` - Mock shell framework for testing Make recipes without executing commands
-
-### Rejected
-_(None yet)_
+This includes:
+- Proposal lifecycle (Draft → Accepted/Rejected)
+- Required proposal format and headers
+- List of current proposals by status

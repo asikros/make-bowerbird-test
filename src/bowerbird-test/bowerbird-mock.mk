@@ -48,7 +48,7 @@ endef
 
 # Private implementation (called via $(eval) by bowerbird::test::add-mock-test)
 define bowerbird::test::__add-mock-test-impl # test-name, target, expected-output, extra-args
-# Test target - generates expected/results files and compares them
+# Test target - runs target with mock shell and compares captured commands
 .PHONY: $1
 $1: SHELL = /bin/sh
 $1:
@@ -58,5 +58,5 @@ $1:
 	@: > $$(WORKDIR_TEST)/$1/.results
 	$$(MAKE) BOWERBIRD_MOCK_RESULTS=$$(WORKDIR_TEST)/$1/.results $4 $2
 	@touch $$(WORKDIR_TEST)/$1/.results
-	@diff -u $$(WORKDIR_TEST)/$1/.expected $$(WORKDIR_TEST)/$1/.results || (>&2 echo "ERROR: Content mismatch for $1" && exit 1)
+	$$(call bowerbird::test::compare-files,$$(WORKDIR_TEST)/$1/.expected,$$(WORKDIR_TEST)/$1/.results)
 endef

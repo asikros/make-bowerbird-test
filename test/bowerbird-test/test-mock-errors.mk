@@ -18,7 +18,7 @@ $(call bowerbird::test::add-mock-test,\
 	mock-error-mismatch-expected,)
 
 test-mock-error-comparison-fails:
-	@$(MAKE) __test-mock-error-internal 2>&1 | grep -q "Content mismatch"
+	@$(MAKE) __test-mock-error-internal 2>&1 | grep -q "Failed file comparison"
 
 
 test-mock-error-results-not-created:

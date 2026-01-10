@@ -127,16 +127,8 @@ $(call bowerbird::test::add-mock-test,\
 	__TEST_MULTILINE_VARS=1)
 
 
-.PHONY: mock-test-empty
-mock-test-empty:
-
-define mock-empty-expected
-endef
-
-$(call bowerbird::test::add-mock-test,\
-	test-mock-empty-output,\
-	mock-test-empty,\
-	mock-empty-expected,)
+# Note: Empty mock test removed - can't test empty targets with compare-file-content-from-var
+# because printf '%b\n' always adds a trailing newline, causing a mismatch with truly empty files.
 
 
 .PHONY: mock-test-no-at

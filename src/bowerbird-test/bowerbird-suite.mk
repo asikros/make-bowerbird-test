@@ -143,8 +143,6 @@ BOWERBIRD_TEST/TARGETS_SECONDARY/$1 := $$(filter-out $$(BOWERBIRD_TEST/CACHE/TES
 $$(BOWERBIRD_GENERATED/$1): $$(BOWERBIRD_TEST/FILES/$1)
 	@mkdir -p $$(dir $$@)
 	@echo "# Auto-generated test execution rules for suite: $1" > $$@
-	@echo "# Generated at: $$(shell date)" >> $$@
-	@echo "" >> $$@
 	$$(call bowerbird::test::__suite-generate-rules,$$@,$1)
 
 # Include the generated file (Make will re-execute if it doesn't exist or is outdated)
@@ -191,7 +189,6 @@ define bowerbird::test::__suite-generate-rules # output-file, suite-name
 		/bin/echo ".PHONY: __test-wrapper/$2/$$test" >> $1; \
 		/bin/echo "__test-wrapper/$2/$$test:" >> $1; \
 		/bin/echo "	@mkdir -p \$$(dir $(bowerbird-test.constant.workdir-logs)/$2/$$test.$(bowerbird-test.constant.ext-log))" >> $1; \
-		/bin/echo "	@mkdir -p \$$(dir $(bowerbird-test.constant.workdir-results)/$2/$$test.$(bowerbird-test.constant.ext-pass))" >> $1; \
 		/bin/echo "	@(\$$(MAKE) $$test --debug=v --warn-undefined-variables $(bowerbird-test.constant.process-tag) \\" >> $1; \
 		/bin/echo "			>$(bowerbird-test.constant.workdir-logs)/$2/$$test.$(bowerbird-test.constant.ext-log) 2>&1 && \\" >> $1; \
 		/bin/echo "			(! (grep -v \"grep.*$(bowerbird-test.constant.undefined-variable-warning)\" \\" >> $1; \

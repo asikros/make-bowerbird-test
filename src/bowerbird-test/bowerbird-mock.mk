@@ -2,9 +2,10 @@ WORKDIR_TEST ?= $(error ERROR: Undefined variable WORKDIR_TEST)
 
 # Mock Shell Implementation
 #
-# When BOWERBIRD_MOCK_RESULTS is set, all pattern rules use a mock shell that captures
-# commands instead of executing them. The mock shell is defined as an inline string to
-# avoid macOS Gatekeeper quarantine issues with external script files.
+# When BOWERBIRD_MOCK_RESULTS is set, a mock shell is activated for all targets via a
+# pattern rule that sets a target-specific SHELL variable. The mock shell captures
+# commands instead of executing them. It is defined as an inline string to avoid
+# macOS Gatekeeper quarantine issues with external script files.
 #
 # The mock shell extracts the last argument ($#) as the command and appends it to
 # BOWERBIRD_MOCK_RESULTS. This works with any .SHELLFLAGS configuration:
@@ -13,6 +14,7 @@ WORKDIR_TEST ?= $(error ERROR: Undefined variable WORKDIR_TEST)
 #   .SHELLFLAGS := -xc       → args: -xc "cmd"      → last arg is cmd ✓
 #
 # Note: This ONLY affects recipe execution in targets, not $(shell) calls during parsing.
+#
 ifdef BOWERBIRD_MOCK_RESULTS
 %: SHELL = sh -c 'eval "COMMAND=\"\$${$$\#}\""; echo "$$COMMAND" >> "$${BOWERBIRD_MOCK_RESULTS:?BOWERBIRD_MOCK_RESULTS must be set}"' sh
 endif

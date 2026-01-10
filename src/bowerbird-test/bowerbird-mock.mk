@@ -31,9 +31,14 @@ endif
 #       extra-args: Optional extra make arguments (e.g., VAR=value)
 #
 #   Example:
+#       .PHONY: clean
+#       clean:
+#           @rm -rf /tmp/build
+#           @echo "Clean complete"
+#
 #       define expected-clean
 #       rm -rf /tmp/build
-#       echo Clean complete
+#       echo "Clean complete"
 #       endef
 #
 #       $(call bowerbird::test::add-mock-test,\

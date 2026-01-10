@@ -93,3 +93,25 @@ test-find-test-files-multiple-patterns-sorted:
 
 test-find-test-files-multiple-patterns-partial-overlap:
 	$(call bowerbird::test::compare-strings,7,$(words $(call bowerbird::test::find-test-files,test/mock-tests,mock-test-*.mk *-test-*.mk)))
+
+
+test-find-test-files-multiple-paths-count:
+	$(call bowerbird::test::compare-strings,3,$(words $(call bowerbird::test::find-test-files,test/mock-tests/alpha test/mock-tests/alpha/beta,*.mk)))
+
+
+test-find-test-files-multiple-paths-nested:
+	$(call bowerbird::test::compare-strings,3,$(words $(call bowerbird::test::find-test-files,test/mock-tests/alpha test/mock-tests/alpha/beta test/mock-tests/alpha/beta/gamma,mock-test*.mk)))
+
+
+test-find-test-files-multiple-paths-no-duplicates:
+	@all=$$(call bowerbird::test::find-test-files,test/mock-tests test/mock-tests/alpha,*.mk); \
+	unique=$$(sort $$all); \
+	test $$(words $$all) -eq $$(words $$unique)
+
+
+test-find-test-files-multiple-paths-and-patterns:
+	$(call bowerbird::test::compare-strings,2,$(words $(call bowerbird::test::find-test-files,test/mock-tests/alpha test/mock-tests/alpha/beta,*alpha.mk *beta.mk)))
+
+
+test-find-test-files-multiple-paths-empty-path:
+	$(call bowerbird::test::compare-strings,1,$(words $(call bowerbird::test::find-test-files,test/mock-tests/empty-dir test/mock-tests/alpha,*alpha.mk)))

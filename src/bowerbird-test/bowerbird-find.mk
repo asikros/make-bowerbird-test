@@ -17,21 +17,21 @@ $(call __bowerbird::test::find-cached-test-results-impl,$1,$$(bowerbird-test.con
 endef
 
 
-# bowerbird::test::find-test-files, path, patterns
+# bowerbird::test::find-test-files, paths, patterns
 #
 #   Returns a sorted list of all files matching the specified patterns under the
-#   directory tree starting with the specified path (supports multiple patterns).
+#   directory trees starting with the specified paths (supports multiple paths and patterns).
 #
 #   Args:
-#       path: Starting directory name for the search.
+#       paths: Space-separated list of directory paths to search.
 #       patterns: Space-separated list of shell-style patterns (e.g., "test*.mk" or "test*.mk check*.mk").
 #
 #   Example:
 #       $(call bowerbird::test::find-test-files,test/,test*.mk)
-#       $(call bowerbird::test::find-test-files,test/,test*.mk check*.mk)
+#       $(call bowerbird::test::find-test-files,test/ src/,test*.mk check*.mk)
 #
-define bowerbird::test::find-test-files # path, patterns
-$(sort $(foreach pattern,$2,$(shell test -d $1 && find $(abspath $1) -type f -name '$(pattern)' 2>/dev/null)))
+define bowerbird::test::find-test-files # paths, patterns
+$(sort $(foreach path,$1,$(foreach pattern,$2,$(shell test -d $(path) && find $(abspath $(path)) -type f -name '$(pattern)' 2>/dev/null))))
 endef
 
 

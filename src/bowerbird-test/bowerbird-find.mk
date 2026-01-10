@@ -60,23 +60,27 @@ $(shell test -d $1 && find $(abspath $1) -type f -name '$2' 2>/dev/null)
 endef
 
 
-# bowerbird::test::find-test-targets, files
+# bowerbird::test::find-test-targets, files, patterns
 #
-#   Discovers test targets from both explicit targets and add-mock-test calls.
-#   Handles line continuation (backslash) for multi-line macro calls.
-#   Only discovers targets matching the test* pattern (not helper/internal targets).
+#   Discovers test targets from both explicit target definitions and add-mock-test calls.
+#   Handles line continuation (backslash) for multi-line target definitions.
+#   Filters discovered targets by the provided patterns (supports multiple patterns).
 #
 #   Args:
 #       files: List of files to search for make targets.
+#       patterns: Space-separated list of shell-style patterns (e.g., "test*" or "test* check*").
 #
 #   Example:
-#       $(call bowerbird::test::find-test-targets,test-file-1.mk test-files-2.mk)
+#       $(call bowerbird::test::find-test-targets,test-file-1.mk test-file-2.mk,test*)
+#       $(call bowerbird::test::find-test-targets,test-file-1.mk,test* check*)
 #
-define bowerbird::test::find-test-targets # files
-$(sort $(shell cat $1 | \
-    sed -e ':a' -e '/\\$$/N' -e 's/\\\n//g' -e 'ta' | \
-    sed -n \
-        -e 's/\(^test[^:]*\):.*/\1/p' \
-        -e 's/^.*bowerbird::test::add-mock-test$(bowerbird::test::COMMA)[ 	]*\(test[^$(bowerbird::test::COMMA)]*\).*/\1/p' \
-    2>/dev/null))
+define bowerbird::test::find-test-targets # files, patterns
+$(sort $(filter \
+    $(subst *,%,$2),\
+    $(shell cat $1 | \
+        sed -e ':a' -e '/\\$$/N' -e 's/\\\n//g' -e 'ta' | \
+        sed -n \
+            -e 's/^\([a-zA-Z0-9_-][a-zA-Z0-9_-]*\):.*/\1/p' \
+            -e 's/^.*bowerbird::test::add-mock-test$(call bowerbird::test::COMMA)[ 	]*\([a-zA-Z0-9_-][a-zA-Z0-9_-]*\).*/\1/p' \
+        2>/dev/null)))
 endef

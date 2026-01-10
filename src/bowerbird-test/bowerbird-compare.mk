@@ -41,7 +41,7 @@ endef
 
 # bowerbird::test::compare-sets, set1, set2
 #
-#   Compares two unordered list of values. Duplicate elements in the list are not
+#   Compares two unordered space-separated lists of values. Duplicate elements are not
 #   considered.
 #
 #   Args:

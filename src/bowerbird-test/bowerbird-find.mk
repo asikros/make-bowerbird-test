@@ -42,7 +42,7 @@ endef
 #   Filters discovered targets by the provided patterns (supports multiple patterns).
 #
 #   Args:
-#       files: List of files to search for make targets.
+#       files: Space-separated list of files to search for make targets.
 #       patterns: Space-separated list of shell-style patterns (e.g., "test*" or "test* check*").
 #
 #   Example:

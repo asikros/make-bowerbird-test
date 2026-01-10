@@ -3,12 +3,12 @@
 
 # Test: Suite macro is defined
 test-suite-macro-defined:
-	test -n "$(strip $(value bowerbird::test::suite))"
+	@test "$(flavor bowerbird::test::suite)" = "recursive" || (echo "ERROR: bowerbird::test::suite not defined" && exit 1)
 
 
 # Test: Implementation macro is defined
 test-suite-impl-macro-defined:
-	test -n "$(strip $(value bowerbird::test::__suite-impl))"
+	@test "$(flavor bowerbird::test::__suite-impl)" = "recursive" || (echo "ERROR: bowerbird::test::__suite-impl not defined" && exit 1)
 
 
 # Test: Configuration defaults are set
@@ -49,9 +49,6 @@ test-suite-constant-subdir-cache:
 	$(call bowerbird::test::compare-strings,$(bowerbird-test.constant.subdir-cache),.bowerbird)
 
 
-# Test: WORKDIR_TEST is required
+# Test: WORKDIR_TEST is defined (checking it's set in bowerbird-suite.mk)
 test-suite-workdir-test-required:
-	@output=$$($(MAKE) -f Makefile \
-		WORKDIR_TEST= \
-		test-suite-macro-defined 2>&1); \
-	echo "$$output" | grep -q "ERROR: Undefined variable WORKDIR_TEST"
+	@test -n "$(WORKDIR_TEST)" || (echo "ERROR: WORKDIR_TEST not set" && exit 1)

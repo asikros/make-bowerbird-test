@@ -149,60 +149,14 @@ export BOWERBIRD_TEST/FILES/$1 := $$(call bowerbird::test::find-test-files,$2,$3
 endef
 ```
 
-### Test File Organization
+### Testing
 
-**One test file per macro/function when possible.**
+For comprehensive testing guidelines, see [testing-guide.md](testing-guide.md).
 
-Each test file should focus on testing a single macro or closely related group of macros. This makes tests easier to find, maintain, and reason about.
-
-**Good - One macro per file:**
-```makefile
-# test-compare-strings.mk - Tests ONLY compare-strings
-test-compare-strings-equal: ...
-test-compare-strings-not-equal: ...
-test-compare-strings-error-message: ...
-
-# test-compare-sets.mk - Tests ONLY compare-sets
-test-compare-sets-equal: ...
-test-compare-sets-not-equal: ...
-test-compare-sets-error-message: ...
-```
-
-**Bad - Multiple macros in one file:**
-```makefile
-# test-compare-errors.mk - Tests error messages for ALL compare macros
-test-compare-strings-error-message: ...
-test-compare-sets-error-message: ...
-test-compare-files-error-message: ...
-test-compare-file-content-error-message: ...
-```
-
-**Rationale:**
-- Easier to locate tests for a specific macro
-- Clear 1:1 relationship between source files and test files
-- Tests stay co-located with what they're testing
-- Easier to ensure complete coverage of a single macro
-- Simpler to refactor or remove functionality
-
-**Pattern:**
-| Source File | Primary Macro | Test File |
-|------------|---------------|-----------|
-| `bowerbird-compare.mk` | `bowerbird::test::compare-strings` | `test-compare-strings.mk` |
-| `bowerbird-compare.mk` | `bowerbird::test::compare-sets` | `test-compare-sets.mk` |
-| `bowerbird-compare.mk` | `bowerbird::test::compare-files` | `test-compare-files.mk` |
-
-### Test Targets
-Test targets should have descriptive names that explain what they test. **No docstrings needed for test targets:**
-```makefile
-# Good - descriptive name
-test-compare-strings-equal:
-	$(call bowerbird::test::compare-strings,alpha,alpha)
-
-
-# Bad - vague name requiring docstring
-test-strings:
-	$(call bowerbird::test::compare-strings,alpha,alpha)
-```
+Key principles:
+- One test file per macro
+- Descriptive test target names (no docstrings needed)
+- **All error messages and warnings must be tested**
 
 ## File Operations
 

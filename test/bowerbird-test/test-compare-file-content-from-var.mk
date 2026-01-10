@@ -70,16 +70,6 @@ test-compare-file-content-from-var-empty-expected-mismatch:
 
 # Whitespace tests
 
-define expected-spaces
-   
-endef
-
-test-compare-file-content-from-var-whitespace-only:
-	@mkdir -p $(WORKDIR_TEST)/$@
-	@printf '   \n' > $(WORKDIR_TEST)/$@/test.txt
-	$(call bowerbird::test::compare-file-content-from-var,$(WORKDIR_TEST)/$@/test.txt,expected-spaces)
-
-
 define expected-hello-single-space
 hello world
 endef

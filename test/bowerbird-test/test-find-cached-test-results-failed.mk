@@ -56,3 +56,16 @@ test-find-cached-test-results-failed-trailing-slash:
 test-find-cached-test-results-failed-returns-target-names-only:
 	@result=$$(call bowerbird::test::find-cached-test-results-failed,$(MOCK_CACHE_DIR)); \
 	test -z "$$(echo $$result | grep '\.fail')"
+
+
+# Error message tests - Make-generated errors require recursive make
+
+test-find-cached-test-results-failed-error-no-path:
+	@output=$$(printf '%s\n' \
+		'include src/bowerbird-test/bowerbird-find.mk' \
+		'WORKDIR_TEST=$(WORKDIR_TEST)' \
+		'$$(call bowerbird::test::find-cached-test-results-failed,)' \
+		'test:' \
+		'	@echo done' | \
+		$(MAKE) --no-print-directory -f - test 2>&1 || true); \
+		echo "$$output" | grep -q "ERROR: bowerbird::test::find-cached-test-results-failed, no path specified"

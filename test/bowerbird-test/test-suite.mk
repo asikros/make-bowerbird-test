@@ -52,3 +52,36 @@ test-suite-constant-subdir-cache:
 # Test: WORKDIR_TEST is defined (checking it's set in bowerbird-suite.mk)
 test-suite-workdir-test-required:
 	@test -n "$(WORKDIR_TEST)" || (echo "ERROR: WORKDIR_TEST not set" && exit 1)
+
+
+# Error message tests - Make-generated errors require recursive make
+
+test-suite-error-missing-target:
+	@output=$$(printf '%s\n' \
+		'include src/bowerbird-test/bowerbird-suite.mk' \
+		'WORKDIR_TEST=$(WORKDIR_TEST)' \
+		'$$(call bowerbird::test::suite,,test/)' \
+		'test:' | \
+		$(MAKE) --no-print-directory -f - test 2>&1 || true); \
+		echo "$$output" | grep -q "ERROR: missing target"
+
+
+test-suite-error-missing-path:
+	@output=$$(printf '%s\n' \
+		'include src/bowerbird-test/bowerbird-suite.mk' \
+		'WORKDIR_TEST=$(WORKDIR_TEST)' \
+		'$$(call bowerbird::test::suite,test-target,)' \
+		'test:' | \
+		$(MAKE) --no-print-directory -f - test 2>&1 || true); \
+		echo "$$output" | grep -q "ERROR: missing path"
+
+
+test-suite-warning-no-files-found:
+	@mkdir -p $(WORKDIR_TEST)/$@/empty-dir
+	@output=$$(printf '%s\n' \
+		'include src/bowerbird-test/bowerbird-suite.mk' \
+		'WORKDIR_TEST=$(WORKDIR_TEST)/$@' \
+		'$$(call bowerbird::test::suite,test-empty,$(WORKDIR_TEST)/$@/empty-dir)' \
+		'test: test-empty' | \
+		$(MAKE) --no-print-directory -f - test 2>&1 || true); \
+		echo "$$output" | grep -q "WARNING: No test files found"

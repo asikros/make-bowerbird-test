@@ -69,3 +69,27 @@ test-find-test-files-absolute-path-input:
 
 test-find-test-files-returns-absolute-paths:
 	@test -n "$(filter /%,$(call bowerbird::test::find-test-files,test/mock-tests,mock-test*.mk))"
+
+
+test-find-test-files-multiple-patterns-count:
+	$(call bowerbird::test::compare-strings,7,$(words $(call bowerbird::test::find-test-files,test/mock-tests,mock-test*.mk test*.mk)))
+
+
+test-find-test-files-multiple-patterns-combined:
+	$(call bowerbird::test::compare-strings,7,$(words $(call bowerbird::test::find-test-files,test/mock-tests,*alpha.mk *beta.mk *gamma.mk *deps.mk *empty.mk *multiline.mk *prefixed.mk)))
+
+
+test-find-test-files-multiple-patterns-no-duplicates:
+	@all=$$(call bowerbird::test::find-test-files,test/mock-tests,mock-test*.mk *.mk); \
+	unique=$$(sort $$all); \
+	test $$(words $$all) -eq $$(words $$unique)
+
+
+test-find-test-files-multiple-patterns-sorted:
+	@sorted=$$(call bowerbird::test::find-test-files,test/mock-tests,mock-test*.mk test*.mk); \
+	manual_sort=$$(sort $$sorted); \
+	test "$$sorted" = "$$manual_sort"
+
+
+test-find-test-files-multiple-patterns-partial-overlap:
+	$(call bowerbird::test::compare-strings,7,$(words $(call bowerbird::test::find-test-files,test/mock-tests,mock-test-*.mk *-test-*.mk)))

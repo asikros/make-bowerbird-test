@@ -5,9 +5,10 @@ This document outlines the conventions and best practices for writing Makefiles 
 ## Naming Conventions
 
 ### Constants
-Use `UPPERCASE_WITH_UNDERSCORES` for constants:
+Use `UPPERCASE_WITH_UNDERSCORES` for framework constants:
 ```makefile
-BOWERBIRD_COMMA := ,
+BOWERBIRD_TEST_COMMA := ,
+BOWERBIRD_TEST_NEWLINE := (newline)
 WORKDIR_TEST := .make/test
 ```
 

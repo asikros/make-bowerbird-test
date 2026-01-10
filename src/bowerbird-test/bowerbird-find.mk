@@ -32,7 +32,7 @@ $(sort $(shell cat $1 | \
     sed -e ':a' -e '/\\$$/N' -e 's/\\\n//g' -e 'ta' | \
     sed -n \
         -e 's/\(^$(subst *,[^:]*,$(bowerbird-test.config.target-pattern-user))\):.*/\1/p' \
-        -e 's/^.*bowerbird::test::add-mock-test$(BOWERBIRD_COMMA)[ 	]*\($(subst *,[^$(BOWERBIRD_COMMA)]*,$(bowerbird-test.config.target-pattern-user))\).*/\1/p' \
+        -e 's/^.*bowerbird::test::add-mock-test$(BOWERBIRD_TEST_COMMA)[ 	]*\($(subst *,[^$(BOWERBIRD_TEST_COMMA)]*,$(bowerbird-test.config.target-pattern-user))\).*/\1/p' \
     2>/dev/null))
 endef
 

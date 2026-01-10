@@ -1,17 +1,18 @@
 WORKDIR_TEST ?= $(error ERROR: Undefined variable WORKDIR_TEST)
 
-# BOWERBIRD_MOCK_SHELL is defined in bowerbird.mk and points to scripts/mock-shell.sh
-# This script extracts the last argument ($#) as the command and appends it to BOWERBIRD_MOCK_RESULTS.
-# This handles any .SHELLFLAGS configuration:
+# Mock Shell Implementation
+#
+# When BOWERBIRD_MOCK_RESULTS is set, all pattern rules use a mock shell that captures
+# commands instead of executing them. The mock shell is defined as an inline string to
+# avoid macOS Gatekeeper quarantine issues with external script files.
+#
+# The mock shell extracts the last argument ($#) as the command and appends it to
+# BOWERBIRD_MOCK_RESULTS. This works with any .SHELLFLAGS configuration:
 #   .SHELLFLAGS := -c        → args: -c "cmd"       → last arg is cmd ✓
 #   .SHELLFLAGS := -e -u -c  → args: -e -u -c "cmd" → last arg is cmd ✓
 #   .SHELLFLAGS := -xc       → args: -xc "cmd"      → last arg is cmd ✓
-
-# KEY MECHANISM: Target-specific SHELL override
-# When BOWERBIRD_MOCK_RESULTS is set (by test runner), all targets use mock shell
-# This ONLY affects recipe execution, not $(shell) calls during parsing
-# The inline shell captures the command and appends it to BOWERBIRD_MOCK_RESULTS
-# Format: sh -c 'eval "CMD=\"${$#}\""; echo "$CMD" >> "$RESULTS"' sh
+#
+# Note: This ONLY affects recipe execution in targets, not $(shell) calls during parsing.
 ifdef BOWERBIRD_MOCK_RESULTS
 %: SHELL = sh -c 'eval "COMMAND=\"\$${$$\#}\""; echo "$$COMMAND" >> "$${BOWERBIRD_MOCK_RESULTS:?BOWERBIRD_MOCK_RESULTS must be set}"' sh
 endif

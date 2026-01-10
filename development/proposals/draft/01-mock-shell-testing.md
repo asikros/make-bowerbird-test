@@ -1,12 +1,17 @@
 # Mock Shell Testing Framework for Make Recipes
 
 ```
-Status:   Draft (Revision 2)
+Status:   Draft (Revision 2) - Historical Reference
 Project:  make-bowerbird-test
 Created:  2026-01-07
 Revised:  2026-01-08
 Author:   Bowerbird Team
 ```
+
+> **Note:** This proposal describes the design and evolution of the mock shell testing
+> framework. The final implementation in `bowerbird-mock.mk` uses an inline shell string
+> instead of an external script file to avoid macOS Gatekeeper quarantine issues.
+> The core concepts and mechanisms described here remain accurate.
 
 ---
 

@@ -21,12 +21,6 @@ test-mock-error-comparison-fails:
 	@$(MAKE) __test-mock-error-internal 2>&1 | grep -q "Content mismatch"
 
 
-test-mock-error-results-not-created:
-	! $(call bowerbird::test::compare-file-content,\
-		$(WORKDIR_TEST)/$@/does-not-exist.txt,\
-		any content) 2>&1 | grep -q "Results file not found"
-
-
 .PHONY: mock-empty-name-target
 mock-empty-name-target:
 	@echo "test"

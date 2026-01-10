@@ -1,24 +1,3 @@
-# bowerbird::test::compare-file-content, file, expected
-#
-#   Compares file contents against expected string value. Supports both
-#   literal newlines (from define blocks) and escape sequences like \n.
-#
-#   Args:
-#       file: Path to file containing actual output.
-#       expected: Expected string value (supports literal newlines and \n).
-#
-#   Errors:
-#       Exits with non-zero code if file not found or content mismatch.
-#
-#   Example:
-#       $(call bowerbird::test::compare-file-content,results.log,line1\nline2)
-#       $(call bowerbird::test::compare-file-content,results.log,$(multiline-var))
-#
-define bowerbird::test::compare-file-content # file, expected
-printf '%b' '$(subst $(bowerbird::test::NEWLINE),\n,$2)' | diff -q "$1" - >/dev/null || (>&2 echo "ERROR: Content mismatch for $1" && exit 1)
-endef
-
-
 # bowerbird::test::compare-file-content-from-var, file, varname
 #
 #   Compares file contents against expected value stored in a variable.

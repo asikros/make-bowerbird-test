@@ -39,3 +39,9 @@ test-find-cached-test-results-nested-dirs:
 
 test-find-cached-test-results-excludes-similar-ext:
 	$(call bowerbird::test::compare-strings,0,$(words $(filter %.bak,$(shell find $(MOCK_CACHE_DIR) -type f -name '*.pass'))))
+
+
+test-find-cached-test-results-absolute-vs-relative:
+	$(call bowerbird::test::compare-strings,\
+		$(words $(shell find $(abspath $(MOCK_CACHE_DIR)) -type f -name '*.pass')),\
+		$(words $(shell find $(MOCK_CACHE_DIR) -type f -name '*.pass')))

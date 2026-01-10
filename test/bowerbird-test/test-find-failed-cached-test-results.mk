@@ -21,3 +21,17 @@ test-find-failed-cached-test-results-nonexistent-dir:
 
 test-find-failed-cached-test-results-nested:
 	$(call bowerbird::test::compare-strings,1,$(words $(shell find $(MOCK_CACHE_DIR)/nested -type f -name '*.$(bowerbird-test.constant.ext-fail)')))
+
+
+test-find-failed-cached-test-results-nested-deep:
+	$(call bowerbird::test::compare-strings,0,$(words $(shell find $(MOCK_CACHE_DIR)/nested/deep -type f -name '*.$(bowerbird-test.constant.ext-fail)')))
+
+
+test-find-failed-cached-test-results-absolute-path:
+	$(call bowerbird::test::compare-strings,\
+		$(words $(shell find $(abspath $(MOCK_CACHE_DIR)) -type f -name '*.$(bowerbird-test.constant.ext-fail)')),\
+		$(words $(shell find $(MOCK_CACHE_DIR) -type f -name '*.$(bowerbird-test.constant.ext-fail)')))
+
+
+test-find-failed-cached-test-results-extension-constant:
+	$(call bowerbird::test::compare-strings,fail,$(bowerbird-test.constant.ext-fail))

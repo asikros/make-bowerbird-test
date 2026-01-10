@@ -102,7 +102,7 @@ test-find-test-targets-discovers-mock-multi:
 
 
 test-find-test-targets-total-count:
-	$(call bowerbird::test::compare-strings,29,$(words $(call bowerbird::test::find-test-targets,test/bowerbird-test/test-find-test-targets.mk)))
+	$(call bowerbird::test::compare-strings,33,$(words $(call bowerbird::test::find-test-targets,test/bowerbird-test/test-find-test-targets.mk)))
 
 
 test-find-test-targets-four-continuations:
@@ -147,3 +147,23 @@ test-find-test-targets-includes-valid-mock:
 
 test-find-test-targets-prefixed-count:
 	$(call bowerbird::test::compare-strings,2,$(words $(call bowerbird::test::find-test-targets,test/mock-tests/mock-test-prefixed.mk)))
+
+
+test-find-test-targets-sorted-output:
+	@sorted="$(call bowerbird::test::find-test-targets,test/bowerbird-test/test-find-test-targets.mk)"; \
+	manual_sort="$(sort $(call bowerbird::test::find-test-targets,test/bowerbird-test/test-find-test-targets.mk))"; \
+	test "$$sorted" = "$$manual_sort"
+
+
+test-find-test-targets-no-duplicates:
+	@all="$(call bowerbird::test::find-test-targets,test/bowerbird-test/test-find-test-targets.mk)"; \
+	unique="$(sort $(call bowerbird::test::find-test-targets,test/bowerbird-test/test-find-test-targets.mk))"; \
+	test $(words $$all) -eq $(words $$unique)
+
+
+test-find-test-targets-hyphenated-names:
+	$(call bowerbird::test::compare-strings,1,$(words $(filter test-find-test-targets-hyphenated-names,$(call bowerbird::test::find-test-targets,test/bowerbird-test/test-find-test-targets.mk))))
+
+
+test-find-test-targets-nonexistent-file:
+	$(call bowerbird::test::compare-strings,0,$(words $(call bowerbird::test::find-test-targets,nonexistent-file.mk)))

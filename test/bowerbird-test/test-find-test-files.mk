@@ -53,3 +53,19 @@ test-find-test-files-subdir-only:
 
 test-find-test-files-total-count:
 	$(call bowerbird::test::compare-strings,7,$(words $(call bowerbird::test::find-test-files,test/mock-tests,mock-test*.mk)))
+
+
+test-find-test-files-case-sensitive:
+	$(call bowerbird::test::compare-strings,0,$(words $(call bowerbird::test::find-test-files,test/mock-tests,MOCK-TEST*.mk)))
+
+
+test-find-test-files-multiple-wildcards:
+	$(call bowerbird::test::compare-strings,7,$(words $(call bowerbird::test::find-test-files,test/mock-tests,*-test-*.mk)))
+
+
+test-find-test-files-absolute-path-input:
+	$(call bowerbird::test::compare-strings,7,$(words $(call bowerbird::test::find-test-files,$(abspath test/mock-tests),mock-test*.mk)))
+
+
+test-find-test-files-returns-absolute-paths:
+	@test -n "$(filter /%,$(call bowerbird::test::find-test-files,test/mock-tests,mock-test*.mk))"

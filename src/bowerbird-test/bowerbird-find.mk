@@ -24,7 +24,7 @@ $$(foreach f,\
 endef
 
 
-# bowerbird::test::find-failed-cached-test-results, path
+# bowerbird::test::find-cached-test-results-failed, path
 #
 #   Function for extracting the list of targets matching previously failed tests.
 #
@@ -35,10 +35,10 @@ endef
 #		Throws an error if path empty.
 #
 #   Example:
-#		$$(call bowerbird::test::find-failed-cached-test-results,path)
+#		$$(call bowerbird::test::find-cached-test-results-failed,path)
 #
-define bowerbird::test::find-failed-cached-test-results # path
-$$(if $1,,$$(error ERROR: bowerbird::test::find-failed-cached-test-results, no path specified)) \
+define bowerbird::test::find-cached-test-results-failed # path
+$$(if $1,,$$(error ERROR: bowerbird::test::find-cached-test-results-failed, no path specified)) \
 $(call bowerbird::test::find-cached-test-results,$1,$$(bowerbird-test.constant.ext-fail))
 endef
 

@@ -1,37 +1,37 @@
 MOCK_CACHE_DIR = test/mock-tests/cached-results
 
 
-test-find-failed-cached-test-results-count:
+test-find-cached-test-results-failed-count:
 	$(call bowerbird::test::compare-strings,3,$(words $(shell find $(MOCK_CACHE_DIR) -type f -name '*.$(bowerbird-test.constant.ext-fail)')))
 
 
-test-find-failed-cached-test-results-files:
+test-find-cached-test-results-failed-files:
 	$(call bowerbird::test::compare-sets,\
 		$(notdir $(shell find $(MOCK_CACHE_DIR) -type f -name '*.$(bowerbird-test.constant.ext-fail)')),\
 		test-gamma.fail test-delta.fail test-nested.fail)
 
 
-test-find-failed-cached-test-results-empty-dir:
+test-find-cached-test-results-failed-empty-dir:
 	$(call bowerbird::test::compare-strings,0,$(words $(shell find test/mock-tests/empty-dir -type f -name '*.$(bowerbird-test.constant.ext-fail)' 2>/dev/null)))
 
 
-test-find-failed-cached-test-results-nonexistent-dir:
+test-find-cached-test-results-failed-nonexistent-dir:
 	$(call bowerbird::test::compare-strings,0,$(words $(shell test -d nonexistent-cache && find nonexistent-cache -type f -name '*.$(bowerbird-test.constant.ext-fail)' 2>/dev/null)))
 
 
-test-find-failed-cached-test-results-nested:
+test-find-cached-test-results-failed-nested:
 	$(call bowerbird::test::compare-strings,1,$(words $(shell find $(MOCK_CACHE_DIR)/nested -type f -name '*.$(bowerbird-test.constant.ext-fail)')))
 
 
-test-find-failed-cached-test-results-nested-deep:
+test-find-cached-test-results-failed-nested-deep:
 	$(call bowerbird::test::compare-strings,0,$(words $(shell find $(MOCK_CACHE_DIR)/nested/deep -type f -name '*.$(bowerbird-test.constant.ext-fail)')))
 
 
-test-find-failed-cached-test-results-absolute-path:
+test-find-cached-test-results-failed-absolute-path:
 	$(call bowerbird::test::compare-strings,\
 		$(words $(shell find $(abspath $(MOCK_CACHE_DIR)) -type f -name '*.$(bowerbird-test.constant.ext-fail)')),\
 		$(words $(shell find $(MOCK_CACHE_DIR) -type f -name '*.$(bowerbird-test.constant.ext-fail)')))
 
 
-test-find-failed-cached-test-results-extension-constant:
+test-find-cached-test-results-failed-extension-constant:
 	$(call bowerbird::test::compare-strings,fail,$(bowerbird-test.constant.ext-fail))

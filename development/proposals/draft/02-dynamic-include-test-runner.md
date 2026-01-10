@@ -166,7 +166,7 @@ bowerbird-test-dynamic.config.fail-first = 1
 
 # Implementation
 # Discover failed tests from cache
-FAILED_TESTS := $(call find-failed-cached-test-results,...)
+FAILED_TESTS := $(call find-cached-test-results-failed,...)
 
 # Split into primary (failed) and secondary (passing)
 TARGETS_PRIMARY := $(filter $(FAILED_TESTS),$(ALL_TESTS))

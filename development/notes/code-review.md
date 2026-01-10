@@ -441,7 +441,7 @@ bowerbird::test::add-mock-test,<test-name>,<target>,<expected-var>,<args>
 bowerbird::test::find-test-files,<path>,<pattern>
 bowerbird::test::find-test-targets,<files>,<pattern>
 bowerbird::test::find-cached-test-results,<path>,<result>
-bowerbird::test::find-failed-cached-test-results,<path>
+bowerbird::test::find-cached-test-results-failed,<path>
 ```
 
 **Constants:**

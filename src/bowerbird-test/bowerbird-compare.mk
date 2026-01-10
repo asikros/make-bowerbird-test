@@ -19,6 +19,33 @@ printf '%b' '$(subst $(bowerbird::test::NEWLINE),\n,$2)' | diff -q "$1" - >/dev/
 endef
 
 
+# bowerbird::test::compare-file-content-from-var, file, varname
+#
+#   Compares file contents against expected value stored in a variable.
+#   This variant takes a variable NAME (not value) to work around Make's
+#   limitation with multiline content in $(call ...) inside $(eval ...).
+#
+#   Args:
+#       file: Path to file containing actual output.
+#       varname: Name of variable containing expected content (without $()).
+#
+#   Errors:
+#       Exits with non-zero code if file not found or content mismatch.
+#
+#   Example:
+#       define expected-output
+#       line1
+#       line2
+#       endef
+#
+#       test:
+#           $(call bowerbird::test::compare-file-content-from-var,results.log,expected-output)
+#
+define bowerbird::test::compare-file-content-from-var # file, varname
+printf '%b\n' '$(subst $(bowerbird::test::NEWLINE),\n,$(value $2))' | diff -q "$1" - >/dev/null || (>&2 echo "ERROR: Content mismatch for $1" && exit 1)
+endef
+
+
 # bowerbird::test::compare-files, file1, file2
 #
 #   Compares the content of the two files.

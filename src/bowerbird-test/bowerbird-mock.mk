@@ -57,11 +57,9 @@ define bowerbird::test::__add-mock-test-impl # test-name, target, expected-outpu
 .PHONY: $1
 $1: SHELL = /bin/sh
 $1:
-	@mkdir -p $$(dir $$(WORKDIR_TEST)/$1/.expected)
-	@$(if $(value $3),printf '%b\n' '$(subst $(bowerbird::test::NEWLINE),\n,$(value $3))',true) > $$(WORKDIR_TEST)/$1/.expected
 	@mkdir -p $$(dir $$(WORKDIR_TEST)/$1/.results)
 	@: > $$(WORKDIR_TEST)/$1/.results
 	$$(MAKE) BOWERBIRD_MOCK_RESULTS=$$(WORKDIR_TEST)/$1/.results $4 $2
 	@touch $$(WORKDIR_TEST)/$1/.results
-	$$(call bowerbird::test::compare-files,$$(WORKDIR_TEST)/$1/.expected,$$(WORKDIR_TEST)/$1/.results)
+	$$(call bowerbird::test::compare-file-content-from-var,$$(WORKDIR_TEST)/$1/.results,$3)
 endef

@@ -84,3 +84,29 @@ test-compare-file-content-tabs:
 	@mkdir -p $(WORKDIR_TEST)/$@
 	@printf 'hello\tworld' > $(WORKDIR_TEST)/$@/test.txt
 	$(call bowerbird::test::compare-file-content,$(WORKDIR_TEST)/$@/test.txt,hello\tworld)
+
+
+test-compare-file-content-error-message:
+	@mkdir -p $(WORKDIR_TEST)/$@
+	@printf 'actual content' > $(WORKDIR_TEST)/$@/test.txt
+	@output=$$($(call bowerbird::test::compare-file-content,\
+		$(WORKDIR_TEST)/$@/test.txt,\
+		expected content) 2>&1 || true); \
+		echo "$$output" | grep -q "ERROR: Content mismatch for"
+
+
+test-compare-file-content-error-to-stderr:
+	@mkdir -p $(WORKDIR_TEST)/$@
+	@printf 'actual' > $(WORKDIR_TEST)/$@/test.txt
+	@output=$$($(call bowerbird::test::compare-file-content,\
+		$(WORKDIR_TEST)/$@/test.txt,\
+		expected) 2>&1 || true); \
+		test -n "$$output"
+
+
+test-compare-file-content-error-has-prefix:
+	@mkdir -p $(WORKDIR_TEST)/$@
+	@echo a > $(WORKDIR_TEST)/$@/test.txt
+	@output=$$($(call bowerbird::test::compare-file-content,\
+		$(WORKDIR_TEST)/$@/test.txt,b) 2>&1 || true); \
+		echo "$$output" | grep -q "^ERROR:"

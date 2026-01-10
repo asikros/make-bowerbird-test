@@ -78,3 +78,33 @@ test-compare-files-line-order-matters:
 	@printf 'line1\nline2\n' > $(WORKDIR_TEST)/$@/file1.txt
 	@printf 'line2\nline1\n' > $(WORKDIR_TEST)/$@/file2.txt
 	! $(call bowerbird::test::compare-files,$(WORKDIR_TEST)/$@/file1.txt,$(WORKDIR_TEST)/$@/file2.txt)
+
+
+test-compare-files-error-message:
+	@mkdir -p $(WORKDIR_TEST)/$@
+	@printf 'content1' > $(WORKDIR_TEST)/$@/file1.txt
+	@printf 'content2' > $(WORKDIR_TEST)/$@/file2.txt
+	@output=$$($(call bowerbird::test::compare-files,\
+		$(WORKDIR_TEST)/$@/file1.txt,\
+		$(WORKDIR_TEST)/$@/file2.txt) 2>&1 || true); \
+		echo "$$output" | grep -q "ERROR: Failed file comparison:"
+
+
+test-compare-files-error-to-stderr:
+	@mkdir -p $(WORKDIR_TEST)/$@
+	@printf 'foo' > $(WORKDIR_TEST)/$@/file1.txt
+	@printf 'bar' > $(WORKDIR_TEST)/$@/file2.txt
+	@output=$$($(call bowerbird::test::compare-files,\
+		$(WORKDIR_TEST)/$@/file1.txt,\
+		$(WORKDIR_TEST)/$@/file2.txt) 2>&1 || true); \
+		test -n "$$output"
+
+
+test-compare-files-error-has-prefix:
+	@mkdir -p $(WORKDIR_TEST)/$@
+	@echo a > $(WORKDIR_TEST)/$@/f1
+	@echo b > $(WORKDIR_TEST)/$@/f2
+	@output=$$($(call bowerbird::test::compare-files,\
+		$(WORKDIR_TEST)/$@/f1,\
+		$(WORKDIR_TEST)/$@/f2) 2>&1 || true); \
+		echo "$$output" | grep -q "^ERROR:"

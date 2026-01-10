@@ -40,12 +40,12 @@ endif
 #           expected-clean,)
 #
 define bowerbird::test::add-mock-test # test-name, target, expected-output, extra-args
-$(eval $(call __bowerbird::test::add-mock-test-impl,$(strip $1),$(strip $2),$(strip $3),$(strip $4)))
+$(eval $(call bowerbird::test::__add-mock-test-impl,$(strip $1),$(strip $2),$(strip $3),$(strip $4)))
 endef
 
 
 # Private implementation (called via $(eval) by bowerbird::test::add-mock-test)
-define __bowerbird::test::add-mock-test-impl # test-name, target, expected-output, extra-args
+define bowerbird::test::__add-mock-test-impl # test-name, target, expected-output, extra-args
 # Test target - generates expected/results files and compares them
 .PHONY: $1
 $1: SHELL = /bin/sh

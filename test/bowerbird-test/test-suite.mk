@@ -8,7 +8,7 @@ test-suite-macro-defined:
 
 # Test: Implementation macro is defined
 test-suite-impl-macro-defined:
-	test -n "$(strip $(value __bowerbird::test::suite-impl))"
+	test -n "$(strip $(value bowerbird::test::__suite-impl))"
 
 
 # Test: Configuration defaults are set

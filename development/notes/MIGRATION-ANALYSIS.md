@@ -264,7 +264,7 @@ Keep both implementations and allow users to choose.
    define bowerbird::test::suite
    $(if $(filter 1,$(bowerbird-test.config.use-dynamic)),\
        $(call bowerbird::test::suite-dynamic,$1,$2),\
-       $(eval $(call __bowerbird::test::suite-impl,$1,$2)))
+       $(eval $(call bowerbird::test::__suite-impl,$1,$2)))
    endef
    ```
 
@@ -293,7 +293,7 @@ Refactor current implementation to use dynamic includes for orchestration only, 
 
 **Changes Required:**
 
-1. **Modify `__bowerbird::test::generate-runner-targets`**
+1. **Modify `bowerbird::test::__generate-runner-targets`**
    ```makefile
    # Current: 5 sequential recursive Make calls
    .PHONY: $1

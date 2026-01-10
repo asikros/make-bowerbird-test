@@ -77,24 +77,24 @@ bowerbird-test.constant.workdir-results = $(WORKDIR_TEST)/$(bowerbird-test.const
 # 		make test-target
 #
 define bowerbird::test::suite # target, path
-$(eval $(call __bowerbird::test::suite-impl,$1,$2))
+$(eval $(call bowerbird::test::__suite-impl,$1,$2))
 endef
 
 
 # Generate the include file path for this suite
-define __bowerbird::test::suite-generated-file # suite-name
+define bowerbird::test::__suite-generated-file # suite-name
 $(bowerbird-test.constant.generated-dir)/$1.mk
 endef
 
 
 # Main implementation - generates the include file and loads it
-define __bowerbird::test::suite-impl # target, path
+define bowerbird::test::__suite-impl # target, path
 # Validation
 $$(if $1,,$$(error ERROR: missing target in '$$$$(call bowerbird::test::suite,<target>,<path>)'))
 $$(if $2,,$$(error ERROR: missing path in '$$$$(call bowerbird::test::suite,$1,<path>)'))
 
 # Define the generated file path
-BOWERBIRD_GENERATED/$1 := $$(call __bowerbird::test::suite-generated-file,$1)
+BOWERBIRD_GENERATED/$1 := $$(call bowerbird::test::__suite-generated-file,$1)
 
 # Discover test files using configured patterns (supports multiple patterns)
 ifndef BOWERBIRD_TEST/FILES/$1
@@ -145,7 +145,7 @@ $$(BOWERBIRD_GENERATED/$1): $$(BOWERBIRD_TEST/FILES/$1)
 	@echo "# Auto-generated test execution rules for suite: $1" > $$@
 	@echo "# Generated at: $$(shell date)" >> $$@
 	@echo "" >> $$@
-	$$(call __bowerbird::test::suite-generate-rules,$$@,$1)
+	$$(call bowerbird::test::__suite-generate-rules,$$@,$1)
 
 # Include the generated file (Make will re-execute if it doesn't exist or is outdated)
 -include $$(BOWERBIRD_GENERATED/$1)
@@ -184,7 +184,7 @@ endef
 
 # Generate the test execution rules and write to file
 # Includes fail-fast support and undefined variable detection
-define __bowerbird::test::suite-generate-rules # output-file, suite-name
+define bowerbird::test::__suite-generate-rules # output-file, suite-name
 	@echo "# Test wrapper targets for suite: $2" >> $1
 	@echo "" >> $1
 	@for test in $(BOWERBIRD_TEST/TARGETS/$2); do \

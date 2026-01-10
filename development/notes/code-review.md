@@ -79,7 +79,7 @@ Some useful operations are missing:
 **2.1 Variable Expansion Correctness**
 The code correctly uses `$$` escaping in eval contexts:
 ```makefile
-define __bowerbird::test::suite-impl
+define bowerbird::test::__suite-impl
 $$(if $1,,$$(error ERROR: missing target))  # ✓ Double $ for eval
 endef
 ```
@@ -88,7 +88,7 @@ endef
 Public macros wrap implementation in $(eval) correctly:
 ```makefile
 define bowerbird::test::suite
-$(eval $(call __bowerbird::test::suite-impl,$1,$2))  # ✓ Single eval wrapper
+$(eval $(call bowerbird::test::__suite-impl,$1,$2))  # ✓ Single eval wrapper
 endef
 ```
 
@@ -104,7 +104,7 @@ This only affects recipe execution, not $(shell) calls during parsing.
 **2.4 Whitespace Handling**
 Uses `$(strip)` appropriately:
 ```makefile
-$(call __bowerbird::test::add-mock-test-impl,$(strip $1),$(strip $2),...)
+$(call bowerbird::test::__add-mock-test-impl,$(strip $1),$(strip $2),...)
 ```
 
 **2.5 Order-Only Prerequisites**
@@ -174,9 +174,9 @@ Public API Layer:
   └─ bowerbird::test::add-mock-test
 
 Implementation Layer:
-  ├─ __bowerbird::test::suite-impl
-  ├─ __bowerbird::test::validate-args
-  ├─ __bowerbird::test::discover-files
+  ├─ bowerbird::test::__suite-impl
+  ├─ bowerbird::test::__validate-args
+  ├─ bowerbird::test::__discover-files
   └─ ... (8 sub-macros)
 
 Discovery Layer:
@@ -293,7 +293,7 @@ User could pass `../../../` but again, this is test infrastructure.
 - Descriptive names
 
 **5.2 Modular Implementation**
-Breaking `__bowerbird::test::suite-impl` into 8 sub-macros was excellent:
+Breaking `bowerbird::test::__suite-impl` into 8 sub-macros was excellent:
 - Each does one thing
 - Easier to test
 - Easier to understand
@@ -302,7 +302,7 @@ Breaking `__bowerbird::test::suite-impl` into 8 sub-macros was excellent:
 **5.3 Inline Comments**
 Parameter names after `define` make code self-documenting:
 ```makefile
-define __bowerbird::test::validate-args # target, path
+define bowerbird::test::__validate-args # target, path
 ```
 
 **5.4 Configuration System**

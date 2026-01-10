@@ -55,10 +55,10 @@ bowerbird::test::add-mock-test
 
 **Private macros** (prefixed with `__`):
 ```makefile
-__bowerbird::test::suite-impl
-__bowerbird::test::validate-args
-__bowerbird::test::discover-files
-__bowerbird::test::generate-runner-targets
+bowerbird::test::__suite-impl
+bowerbird::test::__validate-args
+bowerbird::test::__discover-files
+bowerbird::test::__generate-runner-targets
 ```
 
 The imperative verb-noun form makes it clear what action the macro performs.
@@ -133,18 +133,18 @@ endef
 
 ```makefile
 # Good - parameters clearly documented
-define __bowerbird::test::validate-args # target, path
+define bowerbird::test::__validate-args # target, path
 $$(if $1,,$$(error ERROR: missing target))
 $$(if $2,,$$(error ERROR: missing path))
 endef
 
 # Good - no parameters clearly indicated
-define __bowerbird::test::reset-config # (no args)
+define bowerbird::test::__reset-config # (no args)
 bowerbird-test.config.file-pattern-user := $$(bowerbird-test.config.file-pattern-default)
 endef
 
 # Bad - unclear what $1, $2, $3 represent
-define __bowerbird::test::discover-files
+define bowerbird::test::__discover-files
 export BOWERBIRD_TEST/FILES/$1 := $$(call bowerbird::test::find-test-files,$2,$3)
 endef
 ```

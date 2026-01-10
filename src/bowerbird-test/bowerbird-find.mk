@@ -13,7 +13,7 @@
 #
 define bowerbird::test::find-cached-test-results-failed # path
 $(if $1,,$(error ERROR: bowerbird::test::find-cached-test-results-failed, no path specified)) \
-$(call __bowerbird::test::find-cached-test-results-impl,$1,$(bowerbird-test.constant.ext-fail))
+$(call bowerbird::test::__find-cached-test-results-impl,$1,$(bowerbird-test.constant.ext-fail))
 endef
 
 
@@ -62,9 +62,9 @@ endef
 
 
 # Private implementation: Helper for extracting cached test results by extension
-define __bowerbird::test::find-cached-test-results-impl # path, result
-$(if $1,,$(error ERROR: __bowerbird::test::find-cached-test-results-impl, no path specified)) \
-$(if $2,,$(error ERROR: __bowerbird::test::find-cached-test-results-impl, no result specified)) \
+define bowerbird::test::__find-cached-test-results-impl # path, result
+$(if $1,,$(error ERROR: bowerbird::test::__find-cached-test-results-impl, no path specified)) \
+$(if $2,,$(error ERROR: bowerbird::test::__find-cached-test-results-impl, no result specified)) \
 $(foreach f,\
     $(shell test -d $1 && find $(abspath $(strip $1)) -type f -name '*.$(strip $2)' 2>/dev/null),\
     $(basename $(notdir $f)))

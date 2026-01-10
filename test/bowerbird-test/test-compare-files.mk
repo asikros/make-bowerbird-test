@@ -57,3 +57,24 @@ test-compare-files-trailing-newline-diff:
 	@printf '%s' "content" > $(WORKDIR_TEST)/$@/file1.txt
 	@printf '%s\n' "content" > $(WORKDIR_TEST)/$@/file2.txt
 	! $(call bowerbird::test::compare-files,$(WORKDIR_TEST)/$@/file1.txt,$(WORKDIR_TEST)/$@/file2.txt)
+
+
+test-compare-files-special-chars:
+	@mkdir -p $(WORKDIR_TEST)/$@
+	@printf '%s' 'special @ # chars' > $(WORKDIR_TEST)/$@/file1.txt
+	@printf '%s' 'special @ # chars' > $(WORKDIR_TEST)/$@/file2.txt
+	$(call bowerbird::test::compare-files,$(WORKDIR_TEST)/$@/file1.txt,$(WORKDIR_TEST)/$@/file2.txt)
+
+
+test-compare-files-tabs-vs-spaces:
+	@mkdir -p $(WORKDIR_TEST)/$@
+	@printf 'hello\tworld' > $(WORKDIR_TEST)/$@/file1.txt
+	@printf 'hello world' > $(WORKDIR_TEST)/$@/file2.txt
+	! $(call bowerbird::test::compare-files,$(WORKDIR_TEST)/$@/file1.txt,$(WORKDIR_TEST)/$@/file2.txt)
+
+
+test-compare-files-line-order-matters:
+	@mkdir -p $(WORKDIR_TEST)/$@
+	@printf 'line1\nline2\n' > $(WORKDIR_TEST)/$@/file1.txt
+	@printf 'line2\nline1\n' > $(WORKDIR_TEST)/$@/file2.txt
+	! $(call bowerbird::test::compare-files,$(WORKDIR_TEST)/$@/file1.txt,$(WORKDIR_TEST)/$@/file2.txt)

@@ -1,22 +1,43 @@
-# bowerbird::test::compare-strings, str1, str2
+# bowerbird::test::compare-file-content, file, expected
 #
-#   Compares two string values.
+#   Compares file contents against expected string value. Supports both
+#   literal newlines (from define blocks) and escape sequences like \n.
 #
 #   Args:
-#       str1: First string to be compared.
-#       str2: Second string to be compared.
+#       file: Path to file containing actual output.
+#       expected: Expected string value (supports literal newlines and \n).
 #
 #   Errors:
-#       Terminates with exit 1 if strings are not equal.
+#       Exits with non-zero code if file not found or content mismatch.
 #
 #   Example:
-#       $(call bowerbird::test::compare-strings,equal,equal)
-#       ! $(call bowerbird::test::compare-strings,not-equal,not equal)
+#       $(call bowerbird::test::compare-file-content,results.log,line1\nline2)
+#       $(call bowerbird::test::compare-file-content,results.log,$(multiline-var))
 #
-define bowerbird::test::compare-strings # str1, str2
-    test "$1" = "$2" || \
-            (echo "ERROR: Failed string comparison: '$1' != '$2'" >&2 && exit 1)
+define bowerbird::test::compare-file-content # file, expected
+printf '%b' '$(subst $(BOWERBIRD_NEWLINE),\n,$2)' | diff -q "$1" - >/dev/null || (>&2 echo "ERROR: Content mismatch for $1" && exit 1)
 endef
+
+
+# bowerbird::test::compare-files, file1, file2
+#
+#   Compares the content of the two files.
+#
+#   Args:
+#       file1: First file to be compared.
+#       file2: Second file to be compared.
+#
+#   Errors:
+#       Terminates with exit 1 if the files are different.
+#
+#   Example:
+#       $(call bowerbird::test::compare-files,./file1,./file2)
+#
+define bowerbird::test::compare-files # file1, file2
+    diff -q $1 $2 || \
+            (echo "ERROR: Failed file comparison:" 1>&2 && diff -y $1 $2 1>&2 && exit 1)
+endef
+
 
 # bowerbird::test::compare-sets, set1, set2
 #
@@ -39,41 +60,23 @@ define bowerbird::test::compare-sets # set1, set2
             exit 1)
 endef
 
-# bowerbird::test::compare-files, file1, file2
-#
-#   Compares the content of the two files.
-#
-#   Args:
-#       file1: First file to be compared.
-#       file2: Second file to be compared.
-#
-#   Errors:
-#       Terminates with exit 1 if the files are different.
-#
-#   Example:
-#       $(call bowerbird::test::compare-files,./file1,./file2)
-#
-define bowerbird::test::compare-files # file1, file2
-    diff -q $1 $2 || \
-            (echo "ERROR: Failed file comparison:" 1>&2 && diff -y $1 $2 1>&2 && exit 1)
-endef
 
-# bowerbird::test::compare-file-content, file, expected
+# bowerbird::test::compare-strings, str1, str2
 #
-#   Compares file contents against expected string value. Supports both
-#   literal newlines (from define blocks) and escape sequences like \n.
+#   Compares two string values.
 #
 #   Args:
-#       file: Path to file containing actual output.
-#       expected: Expected string value (supports literal newlines and \n).
+#       str1: First string to be compared.
+#       str2: Second string to be compared.
 #
 #   Errors:
-#       Exits with non-zero code if file not found or content mismatch.
+#       Terminates with exit 1 if strings are not equal.
 #
 #   Example:
-#       $(call bowerbird::test::compare-file-content,results.log,line1\nline2)
-#       $(call bowerbird::test::compare-file-content,results.log,$(multiline-var))
+#       $(call bowerbird::test::compare-strings,equal,equal)
+#       ! $(call bowerbird::test::compare-strings,not-equal,not equal)
 #
-define bowerbird::test::compare-file-content # file, expected
-printf '%b' '$(subst $(BOWERBIRD_NEWLINE),\n,$2)' | diff -q "$1" - >/dev/null || (>&2 echo "ERROR: Content mismatch for $1" && exit 1)
+define bowerbird::test::compare-strings # str1, str2
+    test "$1" = "$2" || \
+            (echo "ERROR: Failed string comparison: '$1' != '$2'" >&2 && exit 1)
 endef

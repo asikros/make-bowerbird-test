@@ -52,3 +52,19 @@ test-compare-sets-multiple-element-not-equal-missing-element:
 
 test-compare-sets-duplicates-collapsed:
 	$(call bowerbird::test::compare-sets,alpha alpha beta,alpha beta)
+
+
+test-compare-sets-many-duplicates:
+	$(call bowerbird::test::compare-sets,alpha alpha alpha beta beta,alpha beta)
+
+
+test-compare-sets-multiple-whitespace:
+	$(call bowerbird::test::compare-sets,alpha  beta,alpha beta)
+
+
+test-compare-sets-many-elements:
+	$(call bowerbird::test::compare-sets,a b c d e f g h,h g f e d c b a)
+
+
+test-compare-sets-special-chars:
+	$(call bowerbird::test::compare-sets,@file #tag,#tag @file)

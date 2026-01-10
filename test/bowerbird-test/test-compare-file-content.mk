@@ -78,3 +78,9 @@ test-compare-file-content-long-content:
 	@mkdir -p $(WORKDIR_TEST)/$@
 	@printf '%s' "This is a very long string that spans multiple lines" > $(WORKDIR_TEST)/$@/test.txt
 	$(call bowerbird::test::compare-file-content,$(WORKDIR_TEST)/$@/test.txt,This is a very long string that spans multiple lines)
+
+
+test-compare-file-content-tabs:
+	@mkdir -p $(WORKDIR_TEST)/$@
+	@printf 'hello\tworld' > $(WORKDIR_TEST)/$@/test.txt
+	$(call bowerbird::test::compare-file-content,$(WORKDIR_TEST)/$@/test.txt,hello\tworld)

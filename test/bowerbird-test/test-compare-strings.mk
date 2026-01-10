@@ -32,3 +32,27 @@ test-compare-strings-case-sensitive:
 
 test-compare-strings-special-chars:
 	$(call bowerbird::test::compare-strings,special @ # chars,special @ # chars)
+
+
+test-compare-strings-multiword:
+	$(call bowerbird::test::compare-strings,multiple words here,multiple words here)
+
+
+test-compare-strings-multiword-not-equal:
+	! $(call bowerbird::test::compare-strings,multiple words here,multiple words there)
+
+
+test-compare-strings-with-equals-sign:
+	$(call bowerbird::test::compare-strings,key=value,key=value)
+
+
+test-compare-strings-with-path:
+	$(call bowerbird::test::compare-strings,/path/to/file.txt,/path/to/file.txt)
+
+
+test-compare-strings-with-commas:
+	$(call bowerbird::test::compare-strings,alpha$(BOWERBIRD_COMMA)beta,alpha$(BOWERBIRD_COMMA)beta)
+
+
+test-compare-strings-with-dollar-sign:
+	$(call bowerbird::test::compare-strings,$$VAR,$$VAR)

@@ -71,13 +71,11 @@ test-compare-sets-special-chars:
 
 
 test-compare-sets-error-message:
-	@mkdir -p $(WORKDIR_TEST)/$@
 	@output=$$($(call bowerbird::test::compare-sets,alpha beta,gamma delta) 2>&1 || true); \
 		echo "$$output" | grep -q "ERROR: Failed list comparison: 'alpha beta' != 'delta gamma'"
 
 
 test-compare-sets-error-to-stderr:
-	@mkdir -p $(WORKDIR_TEST)/$@
 	@output=$$($(call bowerbird::test::compare-sets,one,two) 2>&1 || true); \
 		test -n "$$output"
 

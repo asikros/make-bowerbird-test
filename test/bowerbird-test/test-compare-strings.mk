@@ -59,13 +59,11 @@ test-compare-strings-with-dollar-sign:
 
 
 test-compare-strings-error-message:
-	@mkdir -p $(WORKDIR_TEST)/$@
 	@output=$$($(call bowerbird::test::compare-strings,actual,expected) 2>&1 || true); \
 		echo "$$output" | grep -q "ERROR: Failed string comparison: 'actual' != 'expected'"
 
 
 test-compare-strings-error-to-stderr:
-	@mkdir -p $(WORKDIR_TEST)/$@
 	@output=$$($(call bowerbird::test::compare-strings,foo,bar) 2>&1 || true); \
 		test -n "$$output"
 

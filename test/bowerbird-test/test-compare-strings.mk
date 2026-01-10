@@ -51,7 +51,7 @@ test-compare-strings-with-path:
 
 
 test-compare-strings-with-commas:
-	$(call bowerbird::test::compare-strings,alpha$(BOWERBIRD_TEST_COMMA)beta,alpha$(BOWERBIRD_TEST_COMMA)beta)
+	$(call bowerbird::test::compare-strings,alpha$(bowerbird::test::COMMA)beta,alpha$(bowerbird::test::COMMA)beta)
 
 
 test-compare-strings-with-dollar-sign:

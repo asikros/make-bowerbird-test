@@ -5,10 +5,16 @@ This document outlines the conventions and best practices for writing Makefiles 
 ## Naming Conventions
 
 ### Constants
-Use `UPPERCASE_WITH_UNDERSCORES` for framework constants:
+Use `family::library::UPPERCASE` pattern with `define` for framework constants:
 ```makefile
-BOWERBIRD_TEST_COMMA := ,
-BOWERBIRD_TEST_NEWLINE := (newline)
+define bowerbird::test::COMMA
+,
+endef
+
+define bowerbird::test::NEWLINE
+(newline characters)
+endef
+
 WORKDIR_TEST := .make/test
 ```
 

@@ -1,22 +1,24 @@
-# BOWERBIRD_TEST_COMMA
+# bowerbird::test::COMMA
 #
 #   Helper variable containing a literal comma for use in $(subst) calls
 #   where commas would otherwise be interpreted as argument separators.
 #
 #   Example:
-#       $(subst $(BOWERBIRD_TEST_COMMA), ,$(comma-separated-list))
+#       $(subst $(bowerbird::test::COMMA), ,$(comma-separated-list))
 #
-BOWERBIRD_TEST_COMMA := ,
+define bowerbird::test::COMMA
+,
+endef
 
-# BOWERBIRD_TEST_NEWLINE
+# bowerbird::test::NEWLINE
 #
 #   Helper variable containing a literal newline character for use in $(subst)
 #   and other string manipulation operations.
 #
 #   Example:
-#       $(subst $(BOWERBIRD_TEST_NEWLINE),\n,$(multiline-text))
+#       $(subst $(bowerbird::test::NEWLINE),\n,$(multiline-text))
 #
-define BOWERBIRD_TEST_NEWLINE
+define bowerbird::test::NEWLINE
 
 
 endef

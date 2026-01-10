@@ -15,7 +15,7 @@
 #       $(call bowerbird::test::compare-file-content,results.log,$(multiline-var))
 #
 define bowerbird::test::compare-file-content # file, expected
-printf '%b' '$(subst $(BOWERBIRD_TEST_NEWLINE),\n,$2)' | diff -q "$1" - >/dev/null || (>&2 echo "ERROR: Content mismatch for $1" && exit 1)
+printf '%b' '$(subst $(bowerbird::test::NEWLINE),\n,$2)' | diff -q "$1" - >/dev/null || (>&2 echo "ERROR: Content mismatch for $1" && exit 1)
 endef
 
 

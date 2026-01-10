@@ -446,8 +446,8 @@ bowerbird::test::find-failed-cached-test-results,<path>
 
 **Constants:**
 ```makefile
-BOWERBIRD_TEST_COMMA
-BOWERBIRD_TEST_NEWLINE
+bowerbird::test::COMMA
+bowerbird::test::NEWLINE
 ```
 
 **Configuration:**

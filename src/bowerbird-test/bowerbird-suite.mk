@@ -128,7 +128,7 @@ endif
 # Discover previously failed tests if fail-first is enabled
 ifneq ($$(bowerbird-test.config.fail-first),0)
 ifndef BOWERBIRD_TEST/CACHE/TESTS_PREV_FAILED/$1
-BOWERBIRD_TEST/CACHE/TESTS_PREV_FAILED/$1 := $$(call bowerbird::test::find-cached-test-results-failed,$$(bowerbird-test.constant.workdir-results)/$1,$$(bowerbird-test.constant.ext-fail))
+BOWERBIRD_TEST/CACHE/TESTS_PREV_FAILED/$1 := $$(call bowerbird::test::find-cached-test-results-failed,$$(bowerbird-test.constant.workdir-results)/$1)
 endif
 else
 BOWERBIRD_TEST/CACHE/TESTS_PREV_FAILED/$1 =

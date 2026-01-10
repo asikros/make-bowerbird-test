@@ -440,7 +440,6 @@ bowerbird::test::add-mock-test,<test-name>,<target>,<expected-var>,<args>
 ```makefile
 bowerbird::test::find-test-files,<path>,<pattern>
 bowerbird::test::find-test-targets,<files>,<pattern>
-bowerbird::test::find-cached-test-results,<path>,<result>
 bowerbird::test::find-cached-test-results-failed,<path>
 ```
 

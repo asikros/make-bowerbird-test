@@ -1,29 +1,3 @@
-# bowerbird::test::find-cached-test-results, path, result
-#
-#   Helper function for extracting the list of targets from cached tests matching the
-#	specified result.
-#
-#   Args:
-#       path: Path to the cached results directory.
-#       result: The desired test result. Typically one of the following values from:
-#			bowerbird-test.constant.ext-pass or bowerbird-test.constant.ext-fail.
-#
-#	Error:
-#		Throws an error if path empty.
-#		Throws an error if result empty.
-#
-#   Example:
-#		$$(call bowerbird::test::find-cached-test-results,path,result)
-#
-define bowerbird::test::find-cached-test-results # path, result
-$$(if $1,,$$(error ERROR: bowerbird::test::find-cached-test-results, no path specified)) \
-$$(if $2,,$$(error ERROR: bowerbird::test::find-cached-test-results, no result specified)) \
-$$(foreach f,\
-    $$(shell test -d $1 && find $$(strip $1) -type f -name '*.$$(strip $2)'),\
-    $$(patsubst $$(abspath $$(strip $1))/%.$$(strip $2),%,$$f))
-endef
-
-
 # bowerbird::test::find-cached-test-results-failed, path
 #
 #   Function for extracting the list of targets matching previously failed tests.
@@ -39,7 +13,7 @@ endef
 #
 define bowerbird::test::find-cached-test-results-failed # path
 $$(if $1,,$$(error ERROR: bowerbird::test::find-cached-test-results-failed, no path specified)) \
-$(call bowerbird::test::find-cached-test-results,$1,$$(bowerbird-test.constant.ext-fail))
+$(call __bowerbird::test::find-cached-test-results-impl,$1,$$(bowerbird-test.constant.ext-fail))
 endef
 
 
@@ -84,4 +58,14 @@ $(sort $(filter \
             -e 's/^\([a-zA-Z0-9_-][a-zA-Z0-9_-]*\):.*/\1/p' \
             -e 's/^.*bowerbird::test::add-mock-test$(call bowerbird::test::COMMA)[ 	]*\([a-zA-Z0-9_-][a-zA-Z0-9_-]*\).*/\1/p' \
         2>/dev/null)))
+endef
+
+
+# Private implementation: Helper for extracting cached test results by extension
+define __bowerbird::test::find-cached-test-results-impl # path, result
+$$(if $1,,$$(error ERROR: __bowerbird::test::find-cached-test-results-impl, no path specified)) \
+$$(if $2,,$$(error ERROR: __bowerbird::test::find-cached-test-results-impl, no result specified)) \
+$$(foreach f,\
+    $$(shell test -d $1 && find $$(strip $1) -type f -name '*.$$(strip $2)'),\
+    $$(patsubst $$(abspath $$(strip $1))/%.$$(strip $2),%,$$f))
 endef

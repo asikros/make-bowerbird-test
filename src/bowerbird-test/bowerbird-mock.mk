@@ -55,7 +55,7 @@ $1:
 	@mkdir -p $$(dir $$(WORKDIR_TEST)/$1/.expected)
 	@$(if $(value $3),printf '%b\n' '$(subst $(bowerbird::test::NEWLINE),\n,$(value $3))',true) > $$(WORKDIR_TEST)/$1/.expected
 	@mkdir -p $$(dir $$(WORKDIR_TEST)/$1/.results)
-	@rm -f $$(WORKDIR_TEST)/$1/.results
+	@: > $$(WORKDIR_TEST)/$1/.results
 	$$(MAKE) BOWERBIRD_MOCK_RESULTS=$$(WORKDIR_TEST)/$1/.results $4 $2
 	@touch $$(WORKDIR_TEST)/$1/.results
 	@diff -u $$(WORKDIR_TEST)/$1/.expected $$(WORKDIR_TEST)/$1/.results || (>&2 echo "ERROR: Content mismatch for $1" && exit 1)

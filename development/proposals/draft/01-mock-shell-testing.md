@@ -111,7 +111,7 @@ define bowerbird::test::add-mock-test
 $1: export BOWERBIRD_MOCK_RESULTS = $$(WORKDIR_TEST)/$1/.results
 $1: $$(BOWERBIRD_MOCK_SHELL)
 	@mkdir -p $$(WORKDIR_TEST)/$1
-	@rm -f $$(WORKDIR_TEST)/$1/.results
+	@: > $$(WORKDIR_TEST)/$1/.results
 	$$(MAKE) $4 $2
 	@diff -u <(printf '%s\n' $3) $$(WORKDIR_TEST)/$1/.results
 endef

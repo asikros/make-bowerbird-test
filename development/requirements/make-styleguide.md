@@ -162,6 +162,41 @@ test-strings:
 	$(call bowerbird::test::compare-strings,alpha,alpha)
 ```
 
+## File Operations
+
+### Blanking vs. Removing Files
+
+**Prefer blanking files over removing them when they will be immediately recreated:**
+
+```makefile
+# Good - blank the file (faster, avoids unnecessary syscalls)
+test-target:
+	@: > $(WORKDIR_TEST)/results.txt
+	$(MAKE) target-that-appends-to-results
+
+# Bad - remove then recreate (unnecessary file deletion)
+test-target:
+	@rm -f $(WORKDIR_TEST)/results.txt
+	$(MAKE) target-that-appends-to-results
+```
+
+**Rationale:**
+- `: > file` truncates the file to zero bytes (blanking it)
+- This is faster than `rm -f` followed by recreation
+- Avoids race conditions if other processes are watching the file
+- Preserves file permissions and inode
+- Use `rm -rf` only for actual cleanup targets (e.g., `clean`, `distclean`)
+
+**Examples:**
+```makefile
+# Blanking a mock results file before running tests
+@: > $(WORKDIR_TEST)/mock/.results
+$(MAKE) BOWERBIRD_MOCK_RESULTS=$(WORKDIR_TEST)/mock/.results test-target
+
+# Blanking a log file before a new run
+@: > $(WORKDIR_TEST)/test.log
+```
+
 ## Spacing and Formatting
 
 ### Vertical Spacing

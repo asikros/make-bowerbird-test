@@ -16,16 +16,16 @@ ifdef BOWERBIRD_MOCK_RESULTS
 %: SHELL = sh -c 'eval "COMMAND=\"\$${$$\#}\""; echo "$$COMMAND" >> "$${BOWERBIRD_MOCK_RESULTS:?BOWERBIRD_MOCK_RESULTS must be set}"' sh
 endif
 
-# bowerbird::test::add-mock-test
+# bowerbird::test::add-mock-test, test-name, target, expected-output, extra-args
 #
 #   Creates a test target that runs another target with mock shell
 #   and compares captured commands against expected output.
 #
 #   Args:
-#       $1: Test name (e.g., test-mock-clean)
-#       $2: Target to test (e.g., clean)
-#       $3: Expected output variable name (define block with expected commands)
-#       $4: Optional extra make arguments (e.g., VAR=value)
+#       test-name: Test name (e.g., test-mock-clean)
+#       target: Target to test (e.g., clean)
+#       expected-output: Expected output variable name (define block with expected commands)
+#       extra-args: Optional extra make arguments (e.g., VAR=value)
 #
 #   Example:
 #       define expected-clean
@@ -38,13 +38,13 @@ endif
 #           clean,\
 #           expected-clean,)
 #
-define bowerbird::test::add-mock-test
+define bowerbird::test::add-mock-test # test-name, target, expected-output, extra-args
 $(eval $(call __bowerbird::test::add-mock-test-impl,$(strip $1),$(strip $2),$(strip $3),$(strip $4)))
 endef
 
 
 # Private implementation (called via $(eval) by bowerbird::test::add-mock-test)
-define __bowerbird::test::add-mock-test-impl
+define __bowerbird::test::add-mock-test-impl # test-name, target, expected-output, extra-args
 # Test target - generates expected/results files and compares them
 .PHONY: $1
 $1: SHELL = /bin/sh

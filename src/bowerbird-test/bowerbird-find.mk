@@ -1,4 +1,4 @@
-# bowerbird::test::find-test-files,<path>,<pattern>
+# bowerbird::test::find-test-files, path, pattern
 #
 #   Returns a list of all the files matching the specified pattern under the directory
 #	tree starting with the specified path.
@@ -10,12 +10,12 @@
 #   Example:
 #       $(call bowerbird::test::find-test-files,test/,test*.*)
 #
-define bowerbird::test::find-test-files
+define bowerbird::test::find-test-files # path, pattern
 $(shell test -d $1 && find $(abspath $1) -type f -name '$2' 2>/dev/null)
 endef
 
 
-# bowerbird::test::find-test-targets,<files>,<pattern>
+# bowerbird::test::find-test-targets, files, pattern
 #
 #   Discovers tests from both explicit targets and add-mock-test calls.
 #   Handles line continuation (backslash) for multi-line macro calls.
@@ -27,7 +27,7 @@ endef
 #   Example:
 #       $(call bowerbird::test::find-test-targets,test-file-1.mk test-files-2.mk)
 #
-define bowerbird::test::find-test-targets
+define bowerbird::test::find-test-targets # files, pattern
 $(sort $(shell cat $1 | \
     sed -e ':a' -e '/\\$$/N' -e 's/\\\n//g' -e 'ta' | \
     sed -n \
@@ -37,7 +37,7 @@ $(sort $(shell cat $1 | \
 endef
 
 
-# bowerbird::test::find-cached-test-results,<path>,<result>
+# bowerbird::test::find-cached-test-results, path, result
 #
 #   Helper function for extracting the list of targets from cached tests matching the
 #	specified result.
@@ -52,9 +52,9 @@ endef
 #		Throws an result if result empty.
 #
 #   Example:
-#		$$(call bowerbird::test::find-cached-test-results,<path>,<result>)
+#		$$(call bowerbird::test::find-cached-test-results,path,result)
 #
-define bowerbird::test::find-cached-test-results
+define bowerbird::test::find-cached-test-results # path, result
 $$(if $1,,$$(error ERROR: bowerbird::test::find-cached-test-results, no path specified)) \
 $$(if $2,,$$(error ERROR: bowerbird::test::find-cached-test-results, no result specified)) \
 $$(foreach f,\
@@ -63,7 +63,7 @@ $$(foreach f,\
 endef
 
 
-# bowerbird::test::find-failed-cached-test-results,<path>
+# bowerbird::test::find-failed-cached-test-results, path
 #
 #   Function for extracting the list of targets matching previously failed tests.
 #
@@ -74,9 +74,9 @@ endef
 #		Throws an error if path empty.
 #
 #   Example:
-#		$$(call bowerbird::test::find-cached-test-results,<path>,<result>)
+#		$$(call bowerbird::test::find-cached-test-results,path,result)
 #
-define bowerbird::test::find-failed-cached-test-results
+define bowerbird::test::find-failed-cached-test-results # path
 $$(if $1,,$$(error ERROR: bowerbird::test::find-failed-cached-test-results, no path specified)) \
 $(call bowerbird::test::find-cached-test-results,$1,$$(bowerbird-test.constant.ext-fail))
 endef

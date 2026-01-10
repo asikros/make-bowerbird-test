@@ -90,10 +90,10 @@ This consistency makes the codebase more navigable and predictable.
 
 ### Macro/Function Docstrings
 
-Document all public macros with structured comments. Add inline parameter names after the `define` statement to clarify positional arguments:
+Document all public macros with structured comments. Use simple comma-separated argument names in the header, and add inline parameter comments after the `define` statement:
 
 ```makefile
-# bowerbird::test::compare-strings,<str1>,<str2>
+# bowerbird::test::compare-strings, str1, str2
 #
 #   Brief description of what the function does.
 #
@@ -113,6 +113,11 @@ define bowerbird::test::compare-strings # str1, str2
             (echo "ERROR: Failed string comparison: '$1' != '$2'" >&2 && exit 1)
 endef
 ```
+
+**Format Rules:**
+- Header: `# macro-name, arg1, arg2` (simple comma-separated, no angle brackets)
+- Inline comment: `define macro-name # arg1, arg2` (matches header args)
+- Use consistent arg names between header and inline comment
 
 **Inline Parameter Comments:**
 - Add `# arg1, arg2, ...` after `define` to document what `$1`, `$2`, etc. represent

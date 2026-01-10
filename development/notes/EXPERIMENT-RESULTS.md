@@ -1,7 +1,7 @@
 # Experiment: Dynamic Include-Based Test Runner
 
-**Branch**: `feature/dynamic-include-test-runner`  
-**Date**: January 9, 2026  
+**Branch**: `feature/dynamic-include-test-runner`
+**Date**: January 9, 2026
 **Status**: ✅ Proof of Concept Successful
 
 ## Executive Summary
@@ -220,13 +220,13 @@ Tests run: 227
 
 ### Option 1: Keep Current Approach ✅ **RECOMMENDED**
 
-**Rationale**: 
+**Rationale**:
 - Current approach is simpler and well-understood
 - Performance overhead is acceptable (~50ms per test)
 - Test isolation is critical for reliability
 - No new complexity introduced
 
-**When to reconsider**: 
+**When to reconsider**:
 - Test suite grows to 1000+ tests (>1 minute overhead)
 - Need parallel test execution across many cores
 
@@ -237,7 +237,7 @@ Tests run: 227
 ```makefile
 # Eliminate these 5 recursive calls:
 $(MAKE) list-tests/$1
-$(MAKE) clean/$1  
+$(MAKE) clean/$1
 $(MAKE) run-primary/$1
 $(MAKE) run-secondary/$1
 $(MAKE) report/$1
@@ -300,7 +300,7 @@ Without recursive Make:
 
 The generated `.mk` file is like a compiled binary:
 - Generated from source (test files)
-- Cached and reused when possible  
+- Cached and reused when possible
 - Regenerated only when sources change
 
 This pattern could be applied elsewhere in Make systems.
@@ -380,11 +380,11 @@ make -f example-dynamic-include.mk clean-generated
 
 ## Credits
 
-**Technique inspired by**: 
+**Technique inspired by**:
 - Make's built-in auto-reexecution feature
 - Modern build system patterns (Bazel's analysis phase)
 - The principle of "generate, don't compute"
 
-**Thanks to**: 
+**Thanks to**:
 - The GNU Make manual (Chapter 3.5: How Makefiles Are Remade)
 - User jfredenburg for the excellent question about alternatives to recursive Make

@@ -152,7 +152,7 @@ Total recursive Make calls: 0 + 255 = 255
 
 1. **Fail-Fast Mode** (`bowerbird-test.config.fail-fast`)
    - Kills all running tests on first failure
-   - Uses `kill -TERM $(pgrep ...)` 
+   - Uses `kill -TERM $(pgrep ...)`
    - Critical for CI/CD environments
 
 2. **Fail-First Mode** (`bowerbird-test.config.fail-first`)
@@ -161,7 +161,7 @@ Total recursive Make calls: 0 + 255 = 255
    - Speeds up iterative debugging
 
 3. **Pattern Configuration**
-   - `bowerbird::test::pattern-test-files` 
+   - `bowerbird::test::pattern-test-files`
    - `bowerbird::test::pattern-test-targets`
    - Allows per-suite customization
 
@@ -203,7 +203,7 @@ Total recursive Make calls: 0 + 255 = 255
    ```makefile
    # OLD:
    include $(_PATH)/src/bowerbird-test/bowerbird-suite.mk
-   
+
    # NEW:
    include $(_PATH)/src/bowerbird-test/bowerbird-suite-dynamic.mk
    ```
@@ -212,7 +212,7 @@ Total recursive Make calls: 0 + 255 = 255
    ```makefile
    # OLD:
    $(call bowerbird::test::suite,my-test,test/)
-   
+
    # NEW:
    $(call bowerbird::test::suite-dynamic,my-test,test/)
    ```
@@ -234,7 +234,7 @@ Total recursive Make calls: 0 + 255 = 255
    - Dynamic has different architecture
    - Need new test suite
 
-**Estimated Effort**: 
+**Estimated Effort**:
 - Code changes: 2-3 hours
 - Testing: 8-10 hours
 - Documentation: 2-3 hours
@@ -260,7 +260,7 @@ Keep both implementations and allow users to choose.
    ```makefile
    # In bowerbird-suite.mk
    bowerbird-test.config.use-dynamic = 0  # default: off
-   
+
    define bowerbird::test::suite
    $(if $(filter 1,$(bowerbird-test.config.use-dynamic)),\
        $(call bowerbird::test::suite-dynamic,$1,$2),\
@@ -278,7 +278,7 @@ Keep both implementations and allow users to choose.
    - Feature compatibility matrix
    - Rollback instructions
 
-**Estimated Effort**: 
+**Estimated Effort**:
 - Code changes: 1-2 hours
 - Documentation: 2-3 hours
 - **Total: 3-5 hours**
@@ -303,11 +303,11 @@ Refactor current implementation to use dynamic includes for orchestration only, 
        @$(MAKE) run-primary-tests/$1
        @$(MAKE) run-secondary-tests/$1
        @$(MAKE) report-results/$1
-   
+
    # New: Use Make dependencies (eliminate 5 calls)
    .PHONY: $1
    $1: __bowerbird-setup/$1 __bowerbird-run/$1 __bowerbird-report/$1
-   
+
    __bowerbird-setup/$1: list-discovered-tests/$1 clean-results/$1
    __bowerbird-run/$1: __bowerbird-setup/$1 run-primary-tests/$1 run-secondary-tests/$1
    __bowerbird-report/$1: __bowerbird-run/$1 report-results/$1
@@ -325,7 +325,7 @@ Refactor current implementation to use dynamic includes for orchestration only, 
    .NOTPARALLEL: __bowerbird-setup/$1 __bowerbird-run/$1 __bowerbird-report/$1
    ```
 
-**Estimated Effort**: 
+**Estimated Effort**:
 - Code changes: 2-4 hours
 - Testing: 4-6 hours
 - **Total: 6-10 hours**
@@ -433,7 +433,7 @@ bowerbird-test-dynamic.constant.ext-pass = pass
 
 **Missing in Dynamic**:
 - `fail-fast` configuration
-- `fail-first` configuration  
+- `fail-first` configuration
 - Pattern configuration (file/target)
 - Process tagging
 - Undefined variable warning detection
@@ -566,7 +566,7 @@ START: Should I migrate to dynamic includes?
 │     │     │     │     │   - Re-testing everything?
 │     │     │     │     │   - Maintaining new code?
 │     │     │     │     │   - 256KB generated files?
-│     │     │     │     │  
+│     │     │     │     │
 │     │     │     │     ├─ YES → Migrate to dynamic ✅
 │     │     │     │     └─ NO → Stay with current ✅
 │

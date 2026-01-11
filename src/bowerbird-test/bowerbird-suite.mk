@@ -261,34 +261,44 @@ endef
 
 
 # Generate the test execution rules and write to file
+# Uses a single pattern rule instead of individual explicit targets for performance
 # Includes fail-fast support and undefined variable detection
 define bowerbird::test::__suite-generate-rules # output-file, suite-name
-	@echo "# Test wrapper targets for suite: $2" >> $1
-	@echo "" >> $1
-	@for test in $(BOWERBIRD_TEST/TARGETS/$2); do \
-		/bin/echo ".PHONY: __test-wrapper/$2/$$test" >> $1; \
-		/bin/echo "__test-wrapper/$2/$$test:" >> $1; \
-		/bin/echo "	@mkdir -p \$$(dir $(bowerbird-test.constant.workdir-logs)/$2/$$test.$(bowerbird-test.constant.ext-log))" >> $1; \
-		/bin/echo "	@(\$$(MAKE) $$test --debug=v --warn-undefined-variables $(bowerbird-test.constant.process-tag) \\" >> $1; \
-		/bin/echo "			>$(bowerbird-test.constant.workdir-logs)/$2/$$test.$(bowerbird-test.constant.ext-log) 2>&1 && \\" >> $1; \
-		/bin/echo "			(! (grep -v \"grep.*$(bowerbird-test.constant.undefined-variable-warning)\" \\" >> $1; \
-		/bin/echo "					$(bowerbird-test.constant.workdir-logs)/$2/$$test.$(bowerbird-test.constant.ext-log) | \\" >> $1; \
-		/bin/echo "					grep --color=always \"^.*$(bowerbird-test.constant.undefined-variable-warning).*\$$\$$\" \\" >> $1; \
-		/bin/echo "					>> $(bowerbird-test.constant.workdir-logs)/$2/$$test.$(bowerbird-test.constant.ext-log)) || exit $(bowerbird-test.constant.fail-exit-code)) && \\" >> $1; \
-		/bin/echo "			( \\" >> $1; \
-		/bin/echo "				printf \"\e[1;32mPassed:\e[0m $$test\n\" && \\" >> $1; \
-		/bin/echo "				printf \"\e[1;32mPassed:\e[0m $$test\n\" > $(bowerbird-test.constant.workdir-results)/$2/$$test.$(bowerbird-test.constant.ext-pass) \\" >> $1; \
-		/bin/echo "			)) || \\" >> $1; \
-		/bin/echo "		(\\" >> $1; \
-		/bin/echo "			printf \"\e[1;31mFailed: $$test\e[0m\n\" && \\" >> $1; \
-		/bin/echo "			printf \"\e[1;31mFailed: $$test\e[0m\n\" > $(bowerbird-test.constant.workdir-results)/$2/$$test.$(bowerbird-test.constant.ext-fail) && \\" >> $1; \
-		/bin/echo "				echo && cat $(bowerbird-test.constant.workdir-logs)/$2/$$test.$(bowerbird-test.constant.ext-log) >&2 && \\" >> $1; \
-		/bin/echo "				echo && printf \"\e[1;31mFailed: $$test\e[0m\n\" >&2 && \\" >> $1; \
-		/bin/echo "					(test $(bowerbird-test.option.fail-fast) -eq 0 || (kill -TERM \$$\$$\$$(pgrep -f $(bowerbird-test.constant.process-tag)))) && \\" >> $1; \
-		/bin/echo "					exit $(bowerbird-test.constant.fail-exit-code) \\" >> $1; \
-		/bin/echo "		)" >> $1; \
-		/bin/echo "" >> $1; \
-	done
+	@printf '%s\n' \
+		'# Suite-specific variables for: $2' \
+		'BOWERBIRD_TEST/SUITE/$2/workdir-logs := $(bowerbird-test.constant.workdir-logs)/$2' \
+		'BOWERBIRD_TEST/SUITE/$2/workdir-results := $(bowerbird-test.constant.workdir-results)/$2' \
+		'BOWERBIRD_TEST/SUITE/$2/process-tag := $(bowerbird-test.constant.process-tag)' \
+		'BOWERBIRD_TEST/SUITE/$2/fail-fast := $(bowerbird-test.option.fail-fast)' \
+		'BOWERBIRD_TEST/SUITE/$2/fail-exit-code := $(bowerbird-test.constant.fail-exit-code)' \
+		'BOWERBIRD_TEST/SUITE/$2/undefined-var-warning := $(bowerbird-test.constant.undefined-variable-warning)' \
+		'BOWERBIRD_TEST/SUITE/$2/ext-log := $(bowerbird-test.constant.ext-log)' \
+		'BOWERBIRD_TEST/SUITE/$2/ext-pass := $(bowerbird-test.constant.ext-pass)' \
+		'BOWERBIRD_TEST/SUITE/$2/ext-fail := $(bowerbird-test.constant.ext-fail)' \
+		'' \
+		'# Pattern rule handles all test wrapper targets for suite: $2' \
+		'# Automatic variable $$* expands to the test name' \
+		'__test-wrapper/$2/%:' \
+		'	@mkdir -p $$(dir $$(BOWERBIRD_TEST/SUITE/$2/workdir-logs)/$$*.$$(BOWERBIRD_TEST/SUITE/$2/ext-log))' \
+		'	@($$(MAKE) $$* --debug=v --warn-undefined-variables $$(BOWERBIRD_TEST/SUITE/$2/process-tag) \' \
+		'			>$$(BOWERBIRD_TEST/SUITE/$2/workdir-logs)/$$*.$$(BOWERBIRD_TEST/SUITE/$2/ext-log) 2>&1 && \' \
+		'			(! (grep -v "grep.*$$(BOWERBIRD_TEST/SUITE/$2/undefined-var-warning)" \' \
+		'					$$(BOWERBIRD_TEST/SUITE/$2/workdir-logs)/$$*.$$(BOWERBIRD_TEST/SUITE/$2/ext-log) | \' \
+		'					grep --color=always "^.*$$(BOWERBIRD_TEST/SUITE/$2/undefined-var-warning).*$$$$" \' \
+		'					>> $$(BOWERBIRD_TEST/SUITE/$2/workdir-logs)/$$*.$$(BOWERBIRD_TEST/SUITE/$2/ext-log)) || exit $$(BOWERBIRD_TEST/SUITE/$2/fail-exit-code)) && \' \
+		'			( \' \
+		'				printf "\e[1;32mPassed:\e[0m $$*\n" && \' \
+		'				printf "\e[1;32mPassed:\e[0m $$*\n" > $$(BOWERBIRD_TEST/SUITE/$2/workdir-results)/$$*.$$(BOWERBIRD_TEST/SUITE/$2/ext-pass) \' \
+		'			)) || \' \
+		'		(\' \
+		'			printf "\e[1;31mFailed: $$*\e[0m\n" && \' \
+		'			printf "\e[1;31mFailed: $$*\e[0m\n" > $$(BOWERBIRD_TEST/SUITE/$2/workdir-results)/$$*.$$(BOWERBIRD_TEST/SUITE/$2/ext-fail) && \' \
+		'				echo && cat $$(BOWERBIRD_TEST/SUITE/$2/workdir-logs)/$$*.$$(BOWERBIRD_TEST/SUITE/$2/ext-log) >&2 && \' \
+		'				echo && printf "\e[1;31mFailed: $$*\e[0m\n" >&2 && \' \
+		'					(test $$(BOWERBIRD_TEST/SUITE/$2/fail-fast) -eq 0 || (kill -TERM $$$$$$(pgrep -f $$(BOWERBIRD_TEST/SUITE/$2/process-tag)))) && \' \
+		'					exit $$(BOWERBIRD_TEST/SUITE/$2/fail-exit-code) \' \
+		'		)' \
+		>> $1
 endef
 
 

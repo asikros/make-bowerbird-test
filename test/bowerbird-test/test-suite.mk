@@ -24,6 +24,10 @@ test-suite-option-defaults-fail-first:
 	$(call bowerbird::test::compare-strings,$(bowerbird-test.option.fail-first),0)
 
 
+test-suite-option-defaults-suppress-warnings:
+	$(call bowerbird::test::compare-strings,$(bowerbird-test.option.suppress-warnings),0)
+
+
 test-suite-config-defaults-file-patterns:
 	$(call bowerbird::test::compare-strings,$(bowerbird-test.config.file-patterns),test*.mk)
 
@@ -135,3 +139,38 @@ test-suite-allow-redefine-same-config:
 		'test:' | \
 		$(MAKE) --no-print-directory -f - test 2>&1 || true); \
 		echo "$$output" | grep -qv "ERROR: test suite 'test-target' is already defined"
+
+
+# Flag activation tests - Verify flags set options correctly
+
+test-suite-flag-fail-fast-activates:
+	@output=$$(printf '%s\n' \
+		'include src/bowerbird-test/bowerbird-suite.mk' \
+		'WORKDIR_TEST=$(WORKDIR_TEST)' \
+		'.PHONY: test' \
+		'test:' \
+		'	@echo "fail-fast=$$(bowerbird-test.option.fail-fast)"' | \
+		$(MAKE) --no-print-directory -f - test -- --bowerbird-fail-fast 2>&1); \
+		echo "$$output" | grep -q "fail-fast=1"
+
+
+test-suite-flag-fail-first-activates:
+	@output=$$(printf '%s\n' \
+		'include src/bowerbird-test/bowerbird-suite.mk' \
+		'WORKDIR_TEST=$(WORKDIR_TEST)' \
+		'.PHONY: test' \
+		'test:' \
+		'	@echo "fail-first=$$(bowerbird-test.option.fail-first)"' | \
+		$(MAKE) --no-print-directory -f - test -- --bowerbird-fail-first 2>&1); \
+		echo "$$output" | grep -q "fail-first=1"
+
+
+test-suite-flag-suppress-warnings-activates:
+	@output=$$(printf '%s\n' \
+		'include src/bowerbird-test/bowerbird-suite.mk' \
+		'WORKDIR_TEST=$(WORKDIR_TEST)' \
+		'.PHONY: test' \
+		'test:' \
+		'	@echo "suppress-warnings=$$(bowerbird-test.option.suppress-warnings)"' | \
+		$(MAKE) --no-print-directory -f - test -- --bowerbird-suppress-warnings 2>&1); \
+		echo "$$output" | grep -q "suppress-warnings=1"

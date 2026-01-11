@@ -187,7 +187,7 @@ mock-test-dollars:
 
 define mock-dollars-expected
 echo "Variable: value"
-echo "Literal: $$HOME"
+echo "Literal: $HOME"
 endef
 
 $(call bowerbird::test::add-mock-test,\

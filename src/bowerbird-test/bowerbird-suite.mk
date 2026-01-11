@@ -1,12 +1,7 @@
-# Dynamic Include-Based Test Runner
+# Test Suite Generation
 #
-# This approach reduces orchestration overhead by generating include files on-the-fly.
-# Make will automatically re-execute when included files are generated/updated.
-#
-# Key Insight: Use Make's automatic re-execution feature:
-#   1. First pass: Generate .mk file with test rules
-#   2. Make detects new include file and re-executes
-#   3. Second pass: Run tests using generated rules
+# Provides macros for creating test suite targets that discover and execute tests.
+# Uses constructed include files to avoid recursive Make orchestration overhead.
 #
 # Features:
 #   - Fail-fast: Kills all running tests on first failure
@@ -17,6 +12,11 @@
 
 WORKDIR_TEST ?= $(error ERROR: Undefined variable WORKDIR_TEST)
 
+# Include guard prevents "overriding commands for target" warnings when this
+# file is included multiple times.
+ifndef __BOWERBIRD_TEST_FLAGS_DEFINED
+__BOWERBIRD_TEST_FLAGS_DEFINED := 1
+
 # --bowerbird-fail-fast
 #
 #	Optional flag to kill all tests on first failure.
@@ -24,13 +24,15 @@ WORKDIR_TEST ?= $(error ERROR: Undefined variable WORKDIR_TEST)
 #	When enabled, all parallel test processes are terminated immediately
 #	when the first test failure is detected.
 #
-#	Include guard prevents "overriding commands for target" warnings when this
-#	file is included multiple times.
-#
 #	Example:
 #		make test -- --bowerbird-fail-fast
 #		make check -- --bowerbird-fail-fast
 #
+__BOWERBIRD_FAIL_FAST_FLAG = --bowerbird-fail-fast
+.PHONY: $(__BOWERBIRD_FAIL_FAST_FLAG)
+$(__BOWERBIRD_FAIL_FAST_FLAG):
+	@:
+
 # --bowerbird-fail-first
 #
 #	Optional flag to run previously failed tests first.
@@ -42,6 +44,11 @@ WORKDIR_TEST ?= $(error ERROR: Undefined variable WORKDIR_TEST)
 #		make test -- --bowerbird-fail-first
 #		make check -- --bowerbird-fail-first
 #
+__BOWERBIRD_FAIL_FIRST_FLAG = --bowerbird-fail-first
+.PHONY: $(__BOWERBIRD_FAIL_FIRST_FLAG)
+$(__BOWERBIRD_FAIL_FIRST_FLAG):
+	@:
+
 # --bowerbird-suppress-warnings
 #
 #	Optional flag to suppress warning messages during test discovery.
@@ -53,19 +60,6 @@ WORKDIR_TEST ?= $(error ERROR: Undefined variable WORKDIR_TEST)
 #		make test -- --bowerbird-suppress-warnings
 #		make check -- --bowerbird-suppress-warnings
 #
-ifndef __BOWERBIRD_TEST_FLAGS_DEFINED
-__BOWERBIRD_TEST_FLAGS_DEFINED := 1
-
-__BOWERBIRD_FAIL_FAST_FLAG = --bowerbird-fail-fast
-.PHONY: $(__BOWERBIRD_FAIL_FAST_FLAG)
-$(__BOWERBIRD_FAIL_FAST_FLAG):
-	@:
-
-__BOWERBIRD_FAIL_FIRST_FLAG = --bowerbird-fail-first
-.PHONY: $(__BOWERBIRD_FAIL_FIRST_FLAG)
-$(__BOWERBIRD_FAIL_FIRST_FLAG):
-	@:
-
 __BOWERBIRD_SUPPRESS_WARNINGS_FLAG = --bowerbird-suppress-warnings
 .PHONY: $(__BOWERBIRD_SUPPRESS_WARNINGS_FLAG)
 $(__BOWERBIRD_SUPPRESS_WARNINGS_FLAG):
@@ -73,19 +67,21 @@ $(__BOWERBIRD_SUPPRESS_WARNINGS_FLAG):
 
 endif
 
-# Set options based on command line flags
+# Set option value for --bowerbird-fail-fast
 ifneq ($(filter $(__BOWERBIRD_FAIL_FAST_FLAG),$(MAKECMDGOALS)),)
     bowerbird-test.option.fail-fast = 1
 else
     bowerbird-test.option.fail-fast = 0
 endif
 
+# Set option value for --bowerbird-fail-first
 ifneq ($(filter $(__BOWERBIRD_FAIL_FIRST_FLAG),$(MAKECMDGOALS)),)
     bowerbird-test.option.fail-first = 1
 else
     bowerbird-test.option.fail-first = 0
 endif
 
+# Set option value for --bowerbird-suppress-warnings
 ifneq ($(filter $(__BOWERBIRD_SUPPRESS_WARNINGS_FLAG),$(MAKECMDGOALS)),)
     bowerbird-test.option.suppress-warnings = 1
 else

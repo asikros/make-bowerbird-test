@@ -295,7 +295,7 @@ define bowerbird::test::__suite-generate-rules # output-file, suite-name
 		'			printf "\e[1;31mFailed: $$*\e[0m\n" > $$(BOWERBIRD_TEST/SUITE/$2/workdir-results)/$$*.$$(BOWERBIRD_TEST/SUITE/$2/ext-fail) && \' \
 		'				echo && cat $$(BOWERBIRD_TEST/SUITE/$2/workdir-logs)/$$*.$$(BOWERBIRD_TEST/SUITE/$2/ext-log) >&2 && \' \
 		'				echo && printf "\e[1;31mFailed: $$*\e[0m\n" >&2 && \' \
-		'					(test $$(BOWERBIRD_TEST/SUITE/$2/fail-fast) -eq 0 || (kill -TERM $$$$$$(pgrep -f $$(BOWERBIRD_TEST/SUITE/$2/process-tag)))) && \' \
+		'					(test $$(BOWERBIRD_TEST/SUITE/$2/fail-fast) -eq 0 || (kill -TERM $$$$(pgrep -f $$(BOWERBIRD_TEST/SUITE/$2/process-tag)))) && \' \
 		'					exit $$(BOWERBIRD_TEST/SUITE/$2/fail-exit-code) \' \
 		'		)' \
 		>> $1

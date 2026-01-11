@@ -12,16 +12,16 @@ test-suite-impl-macro-defined:
 
 
 # Test: Configuration defaults are set
-test-suite-config-defaults-fail-exit-code:
-	$(call bowerbird::test::compare-strings,$(bowerbird-test.config.fail-exit-code),0)
+test-suite-constant-fail-exit-code:
+	$(call bowerbird::test::compare-strings,$(bowerbird-test.constant.fail-exit-code),1)
 
 
-test-suite-config-defaults-fail-fast:
-	$(call bowerbird::test::compare-strings,$(bowerbird-test.config.fail-fast),0)
+test-suite-option-defaults-fail-fast:
+	$(call bowerbird::test::compare-strings,$(bowerbird-test.option.fail-fast),0)
 
 
-test-suite-config-defaults-fail-first:
-	$(call bowerbird::test::compare-strings,$(bowerbird-test.config.fail-first),0)
+test-suite-option-defaults-fail-first:
+	$(call bowerbird::test::compare-strings,$(bowerbird-test.option.fail-first),0)
 
 
 test-suite-config-defaults-file-patterns:
@@ -85,3 +85,53 @@ test-suite-warning-no-files-found:
 		'test: test-empty' | \
 		$(MAKE) --no-print-directory -f - test 2>&1 || true); \
 		echo "$$output" | grep -q "WARNING: No test files found"
+
+
+# Configuration fingerprint tests - Ensures suite configuration is unique
+
+test-suite-error-redefine-different-paths:
+	@output=$$(printf '%s\n' \
+		'include src/bowerbird-test/bowerbird-suite.mk' \
+		'WORKDIR_TEST=$(WORKDIR_TEST)' \
+		'$$(call bowerbird::test::suite,test-target,test/fixtures/alpha)' \
+		'$$(call bowerbird::test::suite,test-target,test/fixtures/beta)' \
+		'test:' | \
+		$(MAKE) --no-print-directory -f - test 2>&1 || true); \
+		echo "$$output" | grep -q "ERROR: test suite 'test-target' is already defined with different configuration"
+
+
+test-suite-error-redefine-different-file-patterns:
+	@output=$$(printf '%s\n' \
+		'include src/bowerbird-test/bowerbird-suite.mk' \
+		'WORKDIR_TEST=$(WORKDIR_TEST)' \
+		'bowerbird-test.config.file-patterns = test*.mk' \
+		'$$(call bowerbird::test::suite,test-target,test/fixtures/alpha)' \
+		'bowerbird-test.config.file-patterns = check*.mk' \
+		'$$(call bowerbird::test::suite,test-target,test/fixtures/alpha)' \
+		'test:' | \
+		$(MAKE) --no-print-directory -f - test 2>&1 || true); \
+		echo "$$output" | grep -q "ERROR: test suite 'test-target' is already defined with different configuration"
+
+
+test-suite-error-redefine-different-target-patterns:
+	@output=$$(printf '%s\n' \
+		'include src/bowerbird-test/bowerbird-suite.mk' \
+		'WORKDIR_TEST=$(WORKDIR_TEST)' \
+		'bowerbird-test.config.target-patterns = test*' \
+		'$$(call bowerbird::test::suite,test-target,test/fixtures/alpha)' \
+		'bowerbird-test.config.target-patterns = check*' \
+		'$$(call bowerbird::test::suite,test-target,test/fixtures/alpha)' \
+		'test:' | \
+		$(MAKE) --no-print-directory -f - test 2>&1 || true); \
+		echo "$$output" | grep -q "ERROR: test suite 'test-target' is already defined with different configuration"
+
+
+test-suite-allow-redefine-same-config:
+	@output=$$(printf '%s\n' \
+		'include src/bowerbird-test/bowerbird-suite.mk' \
+		'WORKDIR_TEST=$(WORKDIR_TEST)' \
+		'$$(call bowerbird::test::suite,test-target,test/fixtures/alpha)' \
+		'$$(call bowerbird::test::suite,test-target,test/fixtures/alpha)' \
+		'test:' | \
+		$(MAKE) --no-print-directory -f - test 2>&1 || true); \
+		echo "$$output" | grep -qv "ERROR: test suite 'test-target' is already defined"

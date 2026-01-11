@@ -18,50 +18,75 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - YYYY-MM-DD
 
 ### Added
-- Created the `bowerbird::test::pattern-test-files` macro to configure the file pattern
-  used during test discovery.
-- Created the `bowerbird::test::pattern-test-targets` macro to configure the target
-  pattern used during test discovery.
-- Created internal hooks in preparation for a future `TESTFLAGS` argument
-  - `BOWERBIRD_TEST/CONFIG/FAIL_EXIT_CODE` sets the exit code for failing tests.
-  - `BOWERBIRD_TEST/CONFIG/FAIL_FAST` helps terminate all the parallel make jobs
-    immediately when a test fails.
-  - `BOWERBIRD_TEST/CONFIG/FAIL_FIRST` will find failed tests from the previously
-    cached test results and try to re-run those failed tests first.
-- Added a debugging target to the workflow to help diagnose failed results on the
-  remote runners.
 ### Changed
-- Removed the filename pattern argument from the generate-test-runner macro. Patterns
-  set using the new configuration macros `bowerbird::test::pattern-test-files` and
-  `bowerbird::test::pattern-test-targets`.
-- To help with debugging, the test output is now combined into a single log that shows
-  both stdout and stderr.
-- All macros intended for use outside of target recipes no longer need the pattern
-  `$(eval $(call ... ))` and can instead simply use `$(call ...)`.
-- Renamed log extension variable from BOWERBIRD_TEST_EXT_LOG to the new name
-  BOWERBIRD_TEST/CONSTANT/LOG_EXT in order to better group constants with a common
-  prefix.
-- Renamed all the internal variables to use a consistent pattern.
-- Created series of "action" targets for running the test suite:
-  - `bowerbird-test/runner/list-discovered-tests/<target>`
-  - `bowerbird-test/runner/clean-results/<target>`
-  - `bowerbird-test/runner/run-primary-tests/$<target>`
-  - `bowerbird-test/runner/run-secondary-tests/<target>`
-  - `bowerbird-test/runner/report-results/<target>`
-- Individual test results are now saved to a cache directory organized by target name
-  so that reporting and analyzing the tests can performed separately from running the
-  tests.
 ### Deprecated
 ### Fixed
-- Removed flags from MAKEFLAGS unsupported by Make 3.81.
-- Fixed a bug causing errors when no test targets were discovered.
-- Removed the printed response test since controlling the standard output under all
-  scenarios is too hard.
-- Fixed bug in how pass and fail are determined when other bugs cause the number of
-  targets to be miscounted. Test now fail when a mismatch in the counts is discovered.
-- Fixed bug that created duplicate test targets when target specific variables were
-  used in a test.
 ### Security
+
+
+## [0.2.0] - 2026-01-11
+
+### Added
+- Mock shell testing framework (`bowerbird-mock.mk`) for testing Make recipes without
+  executing commands
+- `bowerbird::test::add-mock-test` macro for creating mock shell tests
+- `bowerbird::test::compare-file-content-from-var` macro for comparing file contents
+  against Make variable values in eval contexts
+- `bowerbird::test::find-test-files` macro with multiple paths and patterns support
+- `bowerbird::test::find-test-targets` macro with pattern parameter support
+- `bowerbird::test::find-cached-test-results-failed` macro for finding failed tests
+- Command-line flags for test execution control:
+  - `--bowerbird-fail-fast` to stop on first failure
+  - `--bowerbird-fail-first` to run previously failed tests first
+  - `--bowerbird-suppress-warnings` to suppress discovery warnings
+- Comprehensive test coverage (230 tests total, up from 226)
+- Pattern-rule optimization for test suite generation (99.3% smaller generated files)
+- Support for multiple test file paths in `bowerbird::test::suite` macro
+- Configuration fingerprint to prevent suite redefinition with different settings
+
+### Changed
+- **BREAKING**: Replaced `bowerbird::test::pattern-test-files` and
+  `bowerbird::test::pattern-test-targets` macros with configuration variables:
+  - `bowerbird-test.config.file-patterns` (default: `test*.mk`)
+  - `bowerbird-test.config.target-patterns` (default: `test*`)
+- **BREAKING**: Renamed constants from `BOWERBIRD_COMMA` and `BOWERBIRD_NEWLINE` to
+  `bowerbird::test::COMMA` and `bowerbird::test::NEWLINE` using define blocks
+- Converted `bowerbird-test.config.fail-exit-code` to constant
+  `bowerbird-test.constant.fail-exit-code` with value `1`
+- Renamed config variables to option variables for command-line override support:
+  - `bowerbird-test.option.fail-fast`
+  - `bowerbird-test.option.fail-first`
+  - `bowerbird-test.option.suppress-warnings`
+- Test suite generation now uses single pattern rule instead of explicit targets per
+  test (33x faster generation, from ~15s to ~0.47s)
+- Split monolithic `test-mock.mk` into focused files:
+  - `test-mock-basic.mk` (core functionality)
+  - `test-mock-output.mk` (output capture and formatting)
+  - `test-mock-variables.mk` (variable expansion and special characters)
+- Reorganized flag definitions in `bowerbird-suite.mk` for better readability
+- Documentation moved to separate `make-bowerbird-docs` repository
+- Simplified docstring format (removed `<arg>` angle brackets)
+- Alphabetized macros in source files for better organization
+- Suite macro now uses `bowerbird::test::find-test-files` and
+  `bowerbird::test::find-test-targets` macros (reduced duplication)
+- Sorted all configuration, option, and constant definitions alphabetically
+- Prefer file blanking (`: >`) over removal (`rm -f`) for files being recreated
+- Use single `printf` command instead of multiple `echo` commands for generation
+
+### Deprecated
+- Old pattern configuration macros removed (use config variables instead)
+
+### Fixed
+- Dollar sign escaping in mock test expected output (`$$HOME` → `$HOME`)
+- Escaping issues in pattern rule recipes for `$(pgrep)` commands
+- Path extraction in `find-cached-test-results` using `basename(notdir)` for nested
+  directories
+- Removed silent skips when suite variables already defined (ensures predictable
+  behavior)
+- Removed unnecessary `mkdir` commands from tests that don't create files
+- Fixed Make 3.81 compatibility issues with pattern rules and complex recipes
+- Error suppression in find commands with `2>/dev/null`
+- Prevented duplicate test target generation when target-specific variables used
 
 
 ## [0.1.0] - 2024-06-06

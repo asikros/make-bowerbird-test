@@ -41,7 +41,7 @@ development/
 │   ├── draft/      # Proposals under active development
 │   ├── accepted/   # Proposals accepted and implemented
 │   ├── rejected/   # Proposals that were rejected (with rationale)
-│   └── PROPOSALS.md # Proposal lifecycle and format guidelines
+│   └── INDEX.md    # Index of all proposals
 └── DEVELOPMENT.md  # This file
 ```
 
@@ -49,9 +49,6 @@ development/
 
 ## Proposals
 
-For information about creating and managing proposals, see **[proposals/PROPOSALS.md](proposals/PROPOSALS.md)**.
+See **[proposals/INDEX.md](proposals/INDEX.md)** for a list of all design documents.
 
-This includes:
-- Proposal lifecycle (Draft → Accepted/Rejected)
-- Required proposal format and headers
-- List of current proposals by status
+For proposal lifecycle and format guidelines, see **[Proposal Guidelines](https://github.com/asikros/make-bowerbird-docs/blob/main/workflows/proposals.md)** in make-bowerbird-docs.

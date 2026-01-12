@@ -2,7 +2,7 @@
 
 Design documents and feature specifications for make-bowerbird-test.
 
-See **[Proposal Lifecycle and Guidelines](https://github.com/asikros/make-bowerbird-docs/blob/main/workflows/proposals.md)** in make-bowerbird-docs for how to create and manage proposals.
+See **[Proposal Lifecycle and Guidelines](https://github.com/asikros/make-bowerbird-docs/blob/main/docs/proposals.md)** in make-bowerbird-docs for how to create and manage proposals.
 
 ---
 

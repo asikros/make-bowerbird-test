@@ -237,11 +237,13 @@ test-find-test-targets-permutation-pattern-matches-one-file:
 
 
 test-find-test-targets-permutation-overlapping-patterns:
-	@all=$$(call bowerbird::test::find-test-targets,\
+	@all="$(call bowerbird::test::find-test-targets,\
 		test/mock-tests/alpha/mock-test-alpha.mk,\
-		test* test-find-files-alpha*); \
-	unique=$$(sort $$all); \
-	test $$(words $$all) -eq $$(words $$unique)
+		test* test-find-files-alpha*)"; \
+	unique=$$(printf '%s\n' $$all | sort | tr '\n' ' '); \
+	all_count=$$(printf '%s\n' $$all | wc -w | tr -d ' '); \
+	unique_count=$$(printf '%s\n' $$unique | wc -w | tr -d ' '); \
+	test $$all_count -eq $$unique_count
 
 
 test-find-test-targets-permutation-unique-matches-per-file:

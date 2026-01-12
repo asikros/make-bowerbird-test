@@ -80,14 +80,16 @@ test-find-test-files-multiple-patterns-combined:
 
 
 test-find-test-files-multiple-patterns-no-duplicates:
-	@all=$$(call bowerbird::test::find-test-files,test/mock-tests,mock-test*.mk *.mk); \
-	unique=$$(sort $$all); \
-	test $$(words $$all) -eq $$(words $$unique)
+	@all="$(call bowerbird::test::find-test-files,test/mock-tests,mock-test*.mk *.mk)"; \
+	unique=$$(printf '%s\n' $$all | sort | tr '\n' ' '); \
+	all_count=$$(printf '%s\n' $$all | wc -w | tr -d ' '); \
+	unique_count=$$(printf '%s\n' $$unique | wc -w | tr -d ' '); \
+	test $$all_count -eq $$unique_count
 
 
 test-find-test-files-multiple-patterns-sorted:
-	@sorted=$$(call bowerbird::test::find-test-files,test/mock-tests,mock-test*.mk test*.mk); \
-	manual_sort=$$(sort $$sorted); \
+	@sorted="$(call bowerbird::test::find-test-files,test/mock-tests,mock-test*.mk test*.mk)"; \
+	manual_sort=$$(printf '%s\n' $$sorted | sort | tr '\n' ' ' | sed 's/ $$//' ); \
 	test "$$sorted" = "$$manual_sort"
 
 
@@ -104,9 +106,11 @@ test-find-test-files-multiple-paths-nested:
 
 
 test-find-test-files-multiple-paths-no-duplicates:
-	@all=$$(call bowerbird::test::find-test-files,test/mock-tests test/mock-tests/alpha,*.mk); \
-	unique=$$(sort $$all); \
-	test $$(words $$all) -eq $$(words $$unique)
+	@all="$(call bowerbird::test::find-test-files,test/mock-tests test/mock-tests/alpha,*.mk)"; \
+	unique=$$(printf '%s\n' $$all | sort | tr '\n' ' '); \
+	all_count=$$(printf '%s\n' $$all | wc -w | tr -d ' '); \
+	unique_count=$$(printf '%s\n' $$unique | wc -w | tr -d ' '); \
+	test $$all_count -eq $$unique_count
 
 
 test-find-test-files-multiple-paths-and-patterns:

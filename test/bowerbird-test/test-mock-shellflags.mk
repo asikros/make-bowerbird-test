@@ -10,7 +10,7 @@ define mock-shellflags-expected
 echo "test output"
 mkdir -p /tmp/test
 echo "second command"
-echo "multiline" && 	echo "continuation"
+echo "multiline" && echo "continuation"
 endef
 
 
@@ -20,12 +20,11 @@ $(call bowerbird::test::add-mock-test,\
 	mock-shellflags-expected,)
 
 
-# Test that .SHELLFLAGS passes through correctly by showing SHELL output
 define mock-shellflags-show-expected
 /bin/sh -e -u -c echo "test output"
 /bin/sh -e -u -c mkdir -p /tmp/test
 /bin/sh -e -u -c echo "second command"
-/bin/sh -e -u -c echo "multiline" && 	echo "continuation"
+/bin/sh -e -u -c echo "multiline" && echo "continuation"
 endef
 
 $(call bowerbird::test::add-mock-test,\
@@ -39,7 +38,7 @@ define mock-shellflags-combined-show-expected
 /bin/sh -xc echo "test output"
 /bin/sh -xc mkdir -p /tmp/test
 /bin/sh -xc echo "second command"
-/bin/sh -xc echo "multiline" && 	echo "continuation"
+/bin/sh -xc echo "multiline" && echo "continuation"
 endef
 
 $(call bowerbird::test::add-mock-test,\
@@ -49,7 +48,6 @@ $(call bowerbird::test::add-mock-test,\
 	__BOWERBIRD_MOCK_SHOW_SHELL= .SHELLFLAGS=-xc)
 
 
-# Test basic command capture without showing shell
 $(call bowerbird::test::add-mock-test,\
 	test-mock-shellflags-errexit-nounset,\
 	mock-shellflags-target,\
@@ -72,7 +70,7 @@ define mock-shellflags-euc-show-expected
 /bin/sh -euc echo "test output"
 /bin/sh -euc mkdir -p /tmp/test
 /bin/sh -euc echo "second command"
-/bin/sh -euc echo "multiline" && 	echo "continuation"
+/bin/sh -euc echo "multiline" && echo "continuation"
 endef
 
 $(call bowerbird::test::add-mock-test,\

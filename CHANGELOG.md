@@ -21,6 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Deprecated
 ### Fixed
+- Mock shell now uses a simple and robust `printf | tail` approach to capture the last argument,
+  ensuring cross-platform compatibility between macOS and Ubuntu CI environments. This avoids
+  issues with `#` character comment parsing, arithmetic expansion, and shell-specific features
+- Enhanced error messages in `bowerbird::test::compare-file-content-from-var` to show
+  both expected and actual content when tests fail, improving debuggability
 ### Security
 
 

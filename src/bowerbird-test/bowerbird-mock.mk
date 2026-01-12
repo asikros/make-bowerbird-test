@@ -4,19 +4,30 @@ WORKDIR_TEST ?= $(error ERROR: Undefined variable WORKDIR_TEST)
 #
 # When BOWERBIRD_MOCK_RESULTS is set, a mock shell is activated for all targets via a
 # pattern rule that sets a target-specific SHELL variable. The mock shell captures
-# commands instead of executing them. It is defined as an inline string to avoid
-# macOS Gatekeeper quarantine issues with external script files.
+# shell commands instead of executing them, writing them to BOWERBIRD_MOCK_RESULTS.
+# It is defined as an inline string to avoid macOS Gatekeeper quarantine issues.
 #
-# The mock shell extracts the last argument ($#) as the command and appends it to
-# BOWERBIRD_MOCK_RESULTS. This works with any .SHELLFLAGS configuration:
-#   .SHELLFLAGS := -c        → args: -c "cmd"       → last arg is cmd ✓
-#   .SHELLFLAGS := -e -u -c  → args: -e -u -c "cmd" → last arg is cmd ✓
-#   .SHELLFLAGS := -xc       → args: -xc "cmd"      → last arg is cmd ✓
+# The mock shell uses bash to:
+#   1. Export .SHELLFLAGS as __BOWERBIRD_SHELLFLAGS environment variable (to avoid quoting issues)
+#   2. Extract the command using ${@: -1} (bash array slicing for last argument)
+#   3. Write both __BOWERBIRD_SHELLFLAGS and the command to the results file
+#
+# This approach works reliably across macOS and Ubuntu by:
+#   - Using environment variables to pass .SHELLFLAGS (no quoting/escaping needed)
+#   - Using bash's simple array slicing syntax (no complex parameter expansion)
+#   - Avoiding the `#` character which causes Make comment parsing issues
 #
 # Note: This ONLY affects recipe execution in targets, not $(shell) calls during parsing.
+# See: development/NOTES-mock-shell-cross-platform.md for details on approaches tried
 #
 ifdef BOWERBIRD_MOCK_RESULTS
-%: SHELL = sh -c 'eval "COMMAND=\"\$${$$\#}\""; echo "$$COMMAND" >> "$${BOWERBIRD_MOCK_RESULTS:?BOWERBIRD_MOCK_RESULTS must be set}"' sh
+export __BOWERBIRD_SHELL := $(SHELL)
+export __BOWERBIRD_SHELLFLAGS = $(value .SHELLFLAGS)
+# Only export if explicitly set (not undefined)
+ifneq ($(origin __BOWERBIRD_MOCK_SHOW_SHELL),undefined)
+export __BOWERBIRD_MOCK_SHOW_SHELL
+endif
+%: SHELL = bash -c 'cmd="$${@: -1}"; if [ "$${__BOWERBIRD_MOCK_SHOW_SHELL+x}" ]; then printf "%s %s %s\\n" "$$__BOWERBIRD_SHELL" "$$__BOWERBIRD_SHELLFLAGS" "$$cmd" >>"$$BOWERBIRD_MOCK_RESULTS"; else printf "%s\\n" "$$cmd" >>"$$BOWERBIRD_MOCK_RESULTS"; fi' bash
 endif
 
 # bowerbird::test::add-mock-test, test-name, target, expected-output, extra-args
@@ -46,8 +57,11 @@ endif
 #           clean,\
 #           expected-clean,)
 #
+#   Note: By default only commands are captured. To also capture SHELL and SHELLFLAGS,
+#         pass __BOWERBIRD_MOCK_SHOW_SHELL= in extra-args.
+#
 define bowerbird::test::add-mock-test # test-name, target, expected-output, extra-args
-$(eval $(call bowerbird::test::__add-mock-test-impl,$(strip $1),$(strip $2),$(strip $3),$(strip $4)))
+$(eval $(call bowerbird::test::__add-mock-test-impl,$(strip $1),$(strip $2),$(strip $3),$4))
 endef
 
 

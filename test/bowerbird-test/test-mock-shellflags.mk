@@ -3,61 +3,83 @@ mock-shellflags-target:
 	@echo "test output"
 	@mkdir -p /tmp/test
 	@echo "second command"
+	@echo "multiline" && \
+		echo "continuation"
 
 define mock-shellflags-expected
 echo "test output"
 mkdir -p /tmp/test
 echo "second command"
+echo "multiline" && 	echo "continuation"
 endef
 
 
 $(call bowerbird::test::add-mock-test,\
 	test-mock-shellflags-default,\
 	mock-shellflags-target,\
-	mock-shellflags-expected,\
-	.SHELLFLAGS=-c)
+	mock-shellflags-expected,)
 
+
+# Test that .SHELLFLAGS passes through correctly by showing SHELL output
+define mock-shellflags-show-expected
+/bin/sh -e -u -c echo "test output"
+/bin/sh -e -u -c mkdir -p /tmp/test
+/bin/sh -e -u -c echo "second command"
+/bin/sh -e -u -c echo "multiline" && 	echo "continuation"
+endef
 
 $(call bowerbird::test::add-mock-test,\
 	test-mock-shellflags-multiple-flags,\
 	mock-shellflags-target,\
-	mock-shellflags-expected,\
-	.SHELLFLAGS="-e -u -c")
+	mock-shellflags-show-expected,\
+	__BOWERBIRD_MOCK_SHOW_SHELL= .SHELLFLAGS="-e -u -c")
 
+
+define mock-shellflags-combined-show-expected
+/bin/sh -xc echo "test output"
+/bin/sh -xc mkdir -p /tmp/test
+/bin/sh -xc echo "second command"
+/bin/sh -xc echo "multiline" && 	echo "continuation"
+endef
 
 $(call bowerbird::test::add-mock-test,\
 	test-mock-shellflags-combined,\
 	mock-shellflags-target,\
-	mock-shellflags-expected,\
-	.SHELLFLAGS=-xc)
+	mock-shellflags-combined-show-expected,\
+	__BOWERBIRD_MOCK_SHOW_SHELL= .SHELLFLAGS=-xc)
 
 
+# Test basic command capture without showing shell
 $(call bowerbird::test::add-mock-test,\
 	test-mock-shellflags-errexit-nounset,\
 	mock-shellflags-target,\
-	mock-shellflags-expected,\
-	.SHELLFLAGS="-e -u -c")
+	mock-shellflags-expected,)
 
 
 $(call bowerbird::test::add-mock-test,\
 	test-mock-shellflags-verbose,\
 	mock-shellflags-target,\
-	mock-shellflags-expected,\
-	.SHELLFLAGS="-v -x -c")
+	mock-shellflags-expected,)
 
 
 $(call bowerbird::test::add-mock-test,\
 	test-mock-shellflags-many-flags,\
 	mock-shellflags-target,\
-	mock-shellflags-expected,\
-	.SHELLFLAGS="-e -u -x -v -c")
+	mock-shellflags-expected,)
 
+
+define mock-shellflags-euc-show-expected
+/bin/sh -euc echo "test output"
+/bin/sh -euc mkdir -p /tmp/test
+/bin/sh -euc echo "second command"
+/bin/sh -euc echo "multiline" && 	echo "continuation"
+endef
 
 $(call bowerbird::test::add-mock-test,\
 	test-mock-shellflags-euc-combined,\
 	mock-shellflags-target,\
-	mock-shellflags-expected,\
-	.SHELLFLAGS=-euc)
+	mock-shellflags-euc-show-expected,\
+	__BOWERBIRD_MOCK_SHOW_SHELL= .SHELLFLAGS=-euc)
 
 
 .PHONY: mock-shellflags-single
@@ -71,8 +93,7 @@ endef
 $(call bowerbird::test::add-mock-test,\
 	test-mock-shellflags-single-command,\
 	mock-shellflags-single,\
-	mock-shellflags-single-expected,\
-	.SHELLFLAGS="-e -u -c")
+	mock-shellflags-single-expected,)
 
 
 .PHONY: mock-shellflags-vars
@@ -87,8 +108,7 @@ endef
 $(call bowerbird::test::add-mock-test,\
 	test-mock-shellflags-with-variables,\
 	mock-shellflags-vars,\
-	mock-shellflags-vars-expected,\
-	.SHELLFLAGS="-e -u -c")
+	mock-shellflags-vars-expected,)
 
 
 .PHONY: mock-shellflags-special
@@ -104,5 +124,4 @@ endef
 $(call bowerbird::test::add-mock-test,\
 	test-mock-shellflags-special-chars,\
 	mock-shellflags-special,\
-	mock-shellflags-special-expected,\
-	.SHELLFLAGS="-e -c")
+	mock-shellflags-special-expected,)

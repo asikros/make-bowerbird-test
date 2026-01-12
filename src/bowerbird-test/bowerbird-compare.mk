@@ -21,7 +21,13 @@
 #           $(call bowerbird::test::compare-file-content-from-var,results.log,expected-output)
 #
 define bowerbird::test::compare-file-content-from-var # file, varname
-printf '%b\n' '$(subst $(bowerbird::test::NEWLINE),\n,$(value $2))' | diff -q "$1" - >/dev/null || (>&2 echo "ERROR: Content mismatch for $1" && exit 1)
+printf '%b\n' '$(subst $(bowerbird::test::NEWLINE),\n,$(value $2))' | diff -q "$1" - >/dev/null || \
+	(>&2 echo "ERROR: Content mismatch for $1" && \
+	 >&2 echo "Expected:" && \
+	 >&2 printf '%b\n' '$(subst $(bowerbird::test::NEWLINE),\n,$(value $2))' && \
+	 >&2 echo "Actual:" && \
+	 >&2 cat "$1" && \
+	 exit 1)
 endef
 
 

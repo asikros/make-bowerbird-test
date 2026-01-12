@@ -1,6 +1,6 @@
 # Config
 .SUFFIXES:
-MAKEFLAGS += --jobs
+MAKEFLAGS += --jobs=8
 MAKEFLAGS += --no-builtin-rules
 MAKEFLAGS += --no-builtin-variables
 MAKEFLAGS += --warn-undefined-variables

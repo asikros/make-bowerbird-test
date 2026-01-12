@@ -59,6 +59,6 @@ $1: SHELL = /bin/sh
 $1:
 	@mkdir -p $$(dir $$(WORKDIR_TEST)/$1/.results)
 	@: > $$(WORKDIR_TEST)/$1/.results
-	$$(MAKE) BOWERBIRD_MOCK_RESULTS=$$(WORKDIR_TEST)/$1/.results $4 $2
+	$$(MAKE) -j1 BOWERBIRD_MOCK_RESULTS=$$(WORKDIR_TEST)/$1/.results $4 $2
 	$$(call bowerbird::test::compare-file-content-from-var,$$(WORKDIR_TEST)/$1/.results,$3)
 endef

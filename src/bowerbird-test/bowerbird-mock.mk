@@ -24,14 +24,16 @@ endif
 # Pattern rule to create mock shell script files (atomic write for parallel safety)
 %mock-shell.bash:
 	@mkdir -p $(dir $@)
-	@printf '%s\n' '#!/bin/bash' > $@.tmp
-	@printf '%s\n' 'for __c; do :; done' >> $@.tmp
-	@printf '%s\n' '__c_normalized=$$(printf "%s" "$$__c" | tr -d '"'"'\'"'"' | tr -s "[:space:]" " " | sed "s/^ //" | sed "s/ $$//")'  >> $@.tmp
-	@printf '%s\n' 'if [ "$${__BOWERBIRD_MOCK_SHOW_SHELL+set}" = "set" ]; then' >> $@.tmp
-	@printf '%s\n' '  printf "%s %s %s\n" "$$__BOWERBIRD_SHELL" "$$__BOWERBIRD_SHELLFLAGS" "$$__c_normalized" >>"$$BOWERBIRD_MOCK_RESULTS"' >> $@.tmp
-	@printf '%s\n' 'else' >> $@.tmp
-	@printf '%s\n' '  printf "%s\n" "$$__c_normalized" >>"$$BOWERBIRD_MOCK_RESULTS"' >> $@.tmp
-	@printf '%s\n' 'fi' >> $@.tmp
+	@printf '%s\n' \
+		'#!/bin/bash' \
+		'for __c; do :; done' \
+		'__c_normalized=$$(printf "%s" "$$__c" | tr -d '"'"'\'"'"' | tr -s "[:space:]" " " | sed "s/^ //" | sed "s/ $$//")'  \
+		'if [ "$${__BOWERBIRD_MOCK_SHOW_SHELL+set}" = "set" ]; then' \
+		'  printf "%s %s %s\n" "$$__BOWERBIRD_SHELL" "$$__BOWERBIRD_SHELLFLAGS" "$$__c_normalized" >>"$$BOWERBIRD_MOCK_RESULTS"' \
+		'else' \
+		'  printf "%s\n" "$$__c_normalized" >>"$$BOWERBIRD_MOCK_RESULTS"' \
+		'fi' \
+		> $@.tmp
 	@mv $@.tmp $@
 
 # bowerbird::test::add-mock-test, test-name, target, expected-output, extra-args

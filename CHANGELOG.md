@@ -21,12 +21,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Deprecated
 ### Fixed
-- Mock shell now uses a simple and robust `printf | tail` approach to capture the last argument,
-  ensuring cross-platform compatibility between macOS and Ubuntu CI environments. This avoids
-  issues with `#` character comment parsing, arithmetic expansion, and shell-specific features
-- Enhanced error messages in `bowerbird::test::compare-file-content-from-var` to show
-  both expected and actual content when tests fail, improving debuggability
 ### Security
+
+
+## [0.3.0] - 2026-01-12
+
+### Added
+- Line continuation support in mock shell for recipes with backslash line breaks
+- Cross-platform normalization of line continuations (handles differences between macOS and Ubuntu)
+
+### Changed
+- Mock shell implementation now uses file-based approach instead of inline shell script
+- Mock shell script files are created via Make pattern rule with atomic writes for parallel safety
+- Consolidated mock shell script generation into single `printf` statement for clarity
+
+### Fixed
+- Mock shell now correctly handles line continuations by normalizing backslash-space sequences
+- Cross-platform compatibility between macOS and Ubuntu for mock shell execution
+- Mock shell script files are created atomically to prevent race conditions in parallel test execution
+- Proper quote escaping in generated bash scripts for the mock shell
 
 
 ## [0.2.0] - 2026-01-11

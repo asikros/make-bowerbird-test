@@ -10,6 +10,10 @@ WORKDIR_TEST ?= $(error ERROR: Undefined variable WORKDIR_TEST)
 # a prerequisite before tests run. This approach works reliably across platforms
 # and handles parallel test execution safely.
 #
+# Line continuations in recipes are normalized by removing backslashes and
+# collapsing whitespace, ensuring consistent behavior across GNU Make versions
+# and platforms (macOS vs Ubuntu).
+#
 ifdef BOWERBIRD_MOCK_RESULTS
 export __BOWERBIRD_SHELL := $(SHELL)
 export __BOWERBIRD_SHELLFLAGS = $(value .SHELLFLAGS)

@@ -1,14 +1,16 @@
 WORKDIR_TEST ?= $(error ERROR: Undefined variable WORKDIR_TEST)
 
+# Path to static mock shell script
+__BOWERBIRD_MOCK_SHELL_SCRIPT := $(dir $(lastword $(MAKEFILE_LIST)))../../scripts/mock-shell.bash
+
 # Mock Shell Implementation
 #
 # When BOWERBIRD_MOCK_RESULTS is set, a mock shell is activated that captures
 # shell commands from recipe execution instead of running them. Captured commands
 # are written to the file specified by BOWERBIRD_MOCK_RESULTS.
 #
-# The mock shell is implemented as a bash script file created automatically as
-# a prerequisite before tests run. This approach works reliably across platforms
-# and handles parallel test execution safely.
+# The mock shell is a static bash script (scripts/mock-shell.bash) that works
+# reliably across platforms and handles parallel test execution safely.
 #
 # Line continuations in recipes are normalized by removing backslashes and
 # collapsing whitespace, ensuring consistent behavior across GNU Make versions
@@ -21,24 +23,8 @@ export __BOWERBIRD_SHELLFLAGS = $(value .SHELLFLAGS)
 ifneq ($(origin __BOWERBIRD_MOCK_SHOW_SHELL),undefined)
 export __BOWERBIRD_MOCK_SHOW_SHELL
 endif
-__BOWERBIRD_MOCK_SHELL_FILE = $(dir $(BOWERBIRD_MOCK_RESULTS))mock-shell.bash
-%: SHELL = /bin/bash $(__BOWERBIRD_MOCK_SHELL_FILE)
+%: SHELL = /bin/bash $(__BOWERBIRD_MOCK_SHELL_SCRIPT)
 endif
-
-# Pattern rule to create mock shell script files (atomic write for parallel safety)
-%mock-shell.bash:
-	@mkdir -p $(dir $@)
-	@printf '%s\n' \
-		'#!/bin/bash' \
-		'for __c; do :; done' \
-		'__c_normalized=$$(printf "%s" "$$__c" | tr -d '"'"'\'"'"' | tr -s "[:space:]" " " | sed "s/^ //" | sed "s/ $$//")'  \
-		'if [ "$${__BOWERBIRD_MOCK_SHOW_SHELL+set}" = "set" ]; then' \
-		'  printf "%s %s %s\n" "$$__BOWERBIRD_SHELL" "$$__BOWERBIRD_SHELLFLAGS" "$$__c_normalized" >>"$$BOWERBIRD_MOCK_RESULTS"' \
-		'else' \
-		'  printf "%s\n" "$$__c_normalized" >>"$$BOWERBIRD_MOCK_RESULTS"' \
-		'fi' \
-		> $@.tmp
-	@mv $@.tmp $@
 
 # bowerbird::test::add-mock-test, test-name, target, expected-output, extra-args
 #
@@ -79,7 +65,6 @@ endef
 define bowerbird::test::__add-mock-test-impl # test-name, target, expected-output, extra-args
 .PHONY: $1
 $1: SHELL = /bin/sh
-$1: $$(WORKDIR_TEST)/$1/mock-shell.bash
 $1:
 	@mkdir -p $$(WORKDIR_TEST)/$1
 	@: > $$(WORKDIR_TEST)/$1/results

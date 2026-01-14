@@ -281,17 +281,16 @@ define bowerbird::test::__suite-generate-rules # output-file, suite-name
 		'# Automatic variable $$* expands to the test name' \
 		'__test-wrapper/$2/%:' \
 		'	@mkdir -p $$(dir $$(BOWERBIRD_TEST/SUITE/$2/workdir-logs)/$$*.$$(BOWERBIRD_TEST/SUITE/$2/ext-log))' \
-		'	@($$(MAKE) $$* --debug=v --warn-undefined-variables $$(BOWERBIRD_TEST/SUITE/$2/process-tag) \' \
+		'	@$$(MAKE) $$* --debug=v --warn-undefined-variables $$(BOWERBIRD_TEST/SUITE/$2/process-tag) \' \
 		'			>$$(BOWERBIRD_TEST/SUITE/$2/workdir-logs)/$$*.$$(BOWERBIRD_TEST/SUITE/$2/ext-log) 2>&1 && \' \
 		'			(! (grep -v "grep.*$$(BOWERBIRD_TEST/SUITE/$2/undefined-var-warning)" \' \
 		'					$$(BOWERBIRD_TEST/SUITE/$2/workdir-logs)/$$*.$$(BOWERBIRD_TEST/SUITE/$2/ext-log) | \' \
+		'					grep -v "make/deps.mk.*$$(BOWERBIRD_TEST/SUITE/$2/undefined-var-warning)" | \' \
 		'					grep --color=always "^.*$$(BOWERBIRD_TEST/SUITE/$2/undefined-var-warning).*$$$$" \' \
 		'					>> $$(BOWERBIRD_TEST/SUITE/$2/workdir-logs)/$$*.$$(BOWERBIRD_TEST/SUITE/$2/ext-log)) || exit $$(BOWERBIRD_TEST/SUITE/$2/fail-exit-code)) && \' \
-		'			( \' \
-		'				printf "\e[1;32mPassed:\e[0m $$*\n" && \' \
-		'				printf "\e[1;32mPassed:\e[0m $$*\n" > $$(BOWERBIRD_TEST/SUITE/$2/workdir-results)/$$*.$$(BOWERBIRD_TEST/SUITE/$2/ext-pass) \' \
-		'			)) || \' \
-		'		(\' \
+		'			printf "\e[1;32mPassed:\e[0m $$*\n" && \' \
+		'			printf "\e[1;32mPassed:\e[0m $$*\n" > $$(BOWERBIRD_TEST/SUITE/$2/workdir-results)/$$*.$$(BOWERBIRD_TEST/SUITE/$2/ext-pass) || \' \
+		'		( \' \
 		'			printf "\e[1;31mFailed: $$*\e[0m\n" && \' \
 		'			printf "\e[1;31mFailed: $$*\e[0m\n" > $$(BOWERBIRD_TEST/SUITE/$2/workdir-results)/$$*.$$(BOWERBIRD_TEST/SUITE/$2/ext-fail) && \' \
 		'				echo && cat $$(BOWERBIRD_TEST/SUITE/$2/workdir-logs)/$$*.$$(BOWERBIRD_TEST/SUITE/$2/ext-log) >&2 && \' \

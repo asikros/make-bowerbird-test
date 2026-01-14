@@ -1,87 +1,63 @@
 # Bowerbird Test Tools
 
-[![Makefile CI](https://github.com/ic-designer/make-bowerbird-test/actions/workflows/makefile.yml/badge.svg)](https://github.com/ic-designer/make-bowerbird-test/actions/workflows/makefile.yml)
+[![Makefile CI](https://github.com/asikros/make-bowerbird-test/actions/workflows/makefile.yml/badge.svg)](https://github.com/asikros/make-bowerbird-test/actions/workflows/makefile.yml)
 
 
 ## Installation
 
 The Bowerbird Test Tools can be loaded using the Bowerbird Dependency Tools as shown
-below. Please refer the [Bowerbird Depend Tools](https://github.com/ic-designer/make-bowerbird-deps.git)
+below. Please refer the [Bowerbird Depend Tools](https://github.com/asikros/make-bowerbird-deps.git)
 for more information about the `bowerbird::git-dependency` macro.
 
 ```makefile
 $(call bowerbird::git-dependency,$(WORKDIR_DEPS)/bowerbird-test,\
-		https://github.com/ic-designer/make-bowerbird-test.git,main,bowerbird.mk)
+		https://github.com/asikros/make-bowerbird-test.git,main,bowerbird.mk)
 ```
 
 ## Macros
 
-### `bowerbird::test::generate-runner`
+### `bowerbird::test::suite`
 
-```
-bowerbird::test::generate-runner,<target>,<path>
+Creates a test suite target that automatically discovers and executes test targets.
 
-    Creates a target for running all the test targets discovered in the specified test
-    file path.
-
-    Args:
-        target: Name of the test-runner target to create.
-        path: Starting directory name for the search.
-
-    Configuration:
-        pattern-test-files: Wildcard filename pattern used during test discovery.
-		    Refer to bowerbird::test::pattern-test-files for more information about
-    		changing this value. Defaults to 'test*.mk'.
-        pattern-test-targets: Wildcard target pattern used during test discovery.
-		    Refer to bowerbird::test::pattern-test-targets for more information about
-    		changing this value. Defaults to 'test*'.
-
-    Error:
-        Throws an error if target empty.
-	    Throws an error if path empty.
-
-    Example:
-        ifdef bowerbird::test::generate-runner
-        $(call bowerbird::test::generate-runner,test-target,test-dir)
-        endif
-
-        make test-target
+```makefile
+$(call bowerbird::test::suite,<target>,<paths>,<file-patterns>,<target-patterns>)
 ```
 
-### `bowerbird::test::pattern-test-files`
+**Parameters:**
+- `target` (required) - Name of the test suite target to create
+- `paths` (required) - Space-separated list of directories to search for test files
+- `file-patterns` (optional) - Wildcard pattern for test file discovery (default: `test*.mk`)
+- `target-patterns` (optional) - Wildcard pattern for test target discovery (default: `test*`)
 
-```
-bowerbird::test::pattern-test-files,<patterns>
+**Features:**
+- Fail-fast mode: Kill all tests on first failure with `--bowerbird-fail-fast`
+- Fail-first mode: Run previously failed tests first with `--bowerbird-fail-first`
+- Per-test isolation via recursive Make
+- Undefined variable detection per test
+- Colored output and detailed reporting
 
-    Updates the filename pattern for test discovery used only by the next invocation of
-    bowerbird::test::generate-runner. The call to bowerbird::test::generate-runner will
-    revert the filename pattern back to the default value such that subsequent calls to
-    bowerbird::test::generate-runner will use the default filename pattern.
+**Example:**
 
-    Args:
-        pattern: Wildcard filename pattern.
+```makefile
+# Basic usage with defaults (test*.mk files, test* targets)
+ifdef bowerbird::test::suite
+$(call bowerbird::test::suite,private_test,test/bowerbird-test)
+endif
 
-    Example:
-        $(call bowerbird::test::pattern-test-files,test*.mk)
-        $(call bowerbird::test::pattern-test-files,*test.*)
-```
+# With custom patterns
+ifdef bowerbird::test::suite
+$(call bowerbird::test::suite,private_test,test/bowerbird-test,test*.mk,test*)
+endif
 
-### `bowerbird::test::pattern-test-targets`
+# Run tests
+make private_test
 
-```
-bowerbird::test::pattern-test-targets,<patterns>
+# Run with fail-fast
+make private_test -- --bowerbird-fail-fast
 
-    Updates the target pattern for test discovery used only by the next invocation of
-    bowerbird::test::generate-runner. The call to bowerbird::test::generate-runner will
-    revert the target pattern back to the default value such that subsequent calls to
-    bowerbird::test::generate-runner will use the default target patten.
-
-    Args:
-        pattern: Wildcard target pattern.
-
-    Example:
-        $(call bowerbird::test::pattern-test-targets,test*)
-        $(call bowerbird::test::pattern-test-targets,*_check)
+# Run with fail-first (previously failed tests run first)
+make private_test -- --bowerbird-fail-first
 ```
 
 

@@ -5,11 +5,11 @@ Quick reference for contributing to make-bowerbird-test.
 ## Code Standards
 
 Follow the project's coding conventions:
-- **[Make Style Guide](https://github.com/asikros/make-bowerbird-docs/blob/main/requirements/make-styleguide.md)** - Naming conventions, documentation patterns, and formatting rules for Makefiles
+- **[Make Style Guide](https://github.com/asikros/make-bowerbird-docs/blob/main/docs/make-styleguide.md)** - Naming conventions, documentation patterns, and formatting rules for Makefiles
 
 ## Development Workflows
 
-- **[Testing Workflow](https://github.com/asikros/make-bowerbird-docs/blob/main/workflows/testing.md)** - How to test changes, debug failures, and ensure test coverage
+- **[Testing Workflow](https://github.com/asikros/make-bowerbird-docs/blob/main/docs/testing-workflow.md)** - How to test changes, debug failures, and ensure test coverage
 
 ## Key Principles
 
@@ -51,4 +51,4 @@ development/
 
 See **[proposals/INDEX.md](proposals/INDEX.md)** for a list of all design documents.
 
-For proposal lifecycle and format guidelines, see **[Proposal Guidelines](https://github.com/asikros/make-bowerbird-docs/blob/main/workflows/proposals.md)** in make-bowerbird-docs.
+For proposal lifecycle and format guidelines, see **[Proposal Guidelines](https://github.com/asikros/make-bowerbird-docs/blob/main/docs/proposals.md)** in make-bowerbird-docs.

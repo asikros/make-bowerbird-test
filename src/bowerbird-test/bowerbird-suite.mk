@@ -105,7 +105,7 @@ bowerbird-test.constant.workdir-logs = $(WORKDIR_TEST)/$(bowerbird-test.constant
 bowerbird-test.constant.workdir-results = $(WORKDIR_TEST)/$(bowerbird-test.constant.subdir-cache)
 
 
-# bowerbird::test::suite, target, paths
+# bowerbird::test::suite, target, paths, file-patterns, target-patterns
 #
 #   Creates a target for running all the test targets discovered in the specified test
 #	file paths using dynamic include files to reduce orchestration overhead.
@@ -125,10 +125,8 @@ bowerbird-test.constant.workdir-results = $(WORKDIR_TEST)/$(bowerbird-test.const
 #   Args:
 #       target: Name of the test suite target to create.
 #       paths: Space-separated list of starting directory paths for the search.
-#
-#   Configuration:
-#       bowerbird-test.config.file-patterns: Space-separated list of file patterns (default: test*.mk)
-#       bowerbird-test.config.target-patterns: Space-separated list of target patterns (default: test*)
+#       file-patterns: (Optional) Space-separated list of file patterns (default: test*.mk)
+#       target-patterns: (Optional) Space-separated list of target patterns (default: test*)
 #
 #   Options (can be set via command line flags):
 #       bowerbird-test.option.fail-fast: Kill all tests on first failure (default: 0, set via --bowerbird-fail-fast)
@@ -149,10 +147,11 @@ bowerbird-test.constant.workdir-results = $(WORKDIR_TEST)/$(bowerbird-test.const
 #   Example:
 #       $(call bowerbird::test::suite,test-target,test-dir)
 #       $(call bowerbird::test::suite,test-all,test-dir1 test-dir2)
+#       $(call bowerbird::test::suite,test-all,test-dir,test*.mk check*.mk,test* check*)
 # 		make test-target
 #
-define bowerbird::test::suite # target, paths
-$(eval $(call bowerbird::test::__suite-impl,$1,$2))
+define bowerbird::test::suite # target, paths, file-patterns, target-patterns
+$(eval $(call bowerbird::test::__suite-impl,$1,$2,$(if $3,$3,$(bowerbird-test.config.file-patterns)),$(if $4,$4,$(bowerbird-test.config.target-patterns))))
 endef
 
 
@@ -163,14 +162,14 @@ endef
 
 
 # Main implementation - generates the include file and loads it
-define bowerbird::test::__suite-impl # target, paths
+define bowerbird::test::__suite-impl # target, paths, file-patterns, target-patterns
 # Validation
 $$(if $1,,$$(error ERROR: missing target in '$$$$(call bowerbird::test::suite,<target>,<paths>)'))
 $$(if $2,,$$(error ERROR: missing paths in '$$$$(call bowerbird::test::suite,$1,<paths>)'))
 
 # Check if suite is being redefined with different configuration (to catch accidental redefinition)
 # Configuration fingerprint includes: paths, file-patterns, target-patterns
-BOWERBIRD_TEST/CONFIG_NEW/$1 := $$(sort $2)|$$(sort $$(bowerbird-test.config.file-patterns))|$$(sort $$(bowerbird-test.config.target-patterns))
+BOWERBIRD_TEST/CONFIG_NEW/$1 := $$(sort $2)|$$(sort $3)|$$(sort $4)
 ifdef BOWERBIRD_TEST/CONFIG/$1
 ifneq ($$(BOWERBIRD_TEST/CONFIG/$1),$$(BOWERBIRD_TEST/CONFIG_NEW/$1))
 $$(error ERROR: test suite '$1' is already defined with different configuration (paths or patterns). Cannot redefine. Each suite target must have a unique configuration.)
@@ -178,17 +177,19 @@ endif
 else
 BOWERBIRD_TEST/CONFIG/$1 := $$(BOWERBIRD_TEST/CONFIG_NEW/$1)
 BOWERBIRD_TEST/PATHS/$1 := $$(sort $2)
+BOWERBIRD_TEST/FILE_PATTERNS/$1 := $$(sort $3)
+BOWERBIRD_TEST/TARGET_PATTERNS/$1 := $$(sort $4)
 endif
 
 # Define the generated file path
 BOWERBIRD_GENERATED/$1 := $$(call bowerbird::test::__suite-generated-file,$1)
 
-# Discover test files using configured patterns (supports multiple paths and patterns)
+# Discover test files using specified patterns (supports multiple paths and patterns)
 # Note: Variable may already be defined during recursive Make re-parsing, but since we validated
 # that paths match (above), rediscovering would yield the same files. We rediscover anyway to
 # avoid confusion and ensure consistency.
-export BOWERBIRD_TEST/FILES/$1 := $$(call bowerbird::test::find-test-files,$2,$$(bowerbird-test.config.file-patterns))
-$$(if $$(BOWERBIRD_TEST/FILES/$1),,$$(if $$(filter 1,$$(bowerbird-test.option.suppress-warnings)),,$$(warning WARNING: No test files found in '$2' matching '$$(bowerbird-test.config.file-patterns)')))
+export BOWERBIRD_TEST/FILES/$1 := $$(call bowerbird::test::find-test-files,$2,$3)
+$$(if $$(BOWERBIRD_TEST/FILES/$1),,$$(if $$(filter 1,$$(bowerbird-test.option.suppress-warnings)),,$$(warning WARNING: No test files found in '$2' matching '$3')))
 
 
 # Include test files to get targets (but only if not already included)
@@ -200,9 +201,9 @@ include $$(BOWERBIRD_TEST/FILES/$1)
 endif
 endif
 
-# Discover test targets using configured patterns (supports multiple patterns)
+# Discover test targets using specified patterns (supports multiple patterns)
 ifneq (,$$(BOWERBIRD_TEST/FILES/$1))
-export BOWERBIRD_TEST/TARGETS/$1 := $$(call bowerbird::test::find-test-targets,$$(BOWERBIRD_TEST/FILES/$1),$$(bowerbird-test.config.target-patterns))
+export BOWERBIRD_TEST/TARGETS/$1 := $$(call bowerbird::test::find-test-targets,$$(BOWERBIRD_TEST/FILES/$1),$4)
 else
 export BOWERBIRD_TEST/TARGETS/$1 :=
 endif

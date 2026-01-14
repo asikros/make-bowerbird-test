@@ -26,8 +26,4 @@ private_clean:
 	@echo "INFO: Cleaning complete."
 	@echo
 
-# Test suite configuration
-bowerbird-test.config.file-patterns := test*.mk
-bowerbird-test.config.target-patterns = test*
-
-$(call bowerbird::test::suite,private_test,test/bowerbird-test)
+$(call bowerbird::test::suite,private_test,test/bowerbird-test,test*.mk,test*)

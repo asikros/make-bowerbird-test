@@ -9,18 +9,8 @@ https://raw.githubusercontent.com/asikros/make-bowerbird-deps/\
 main/src/bowerbird-deps/bowerbird-deps.mk
 include $(BOWERBIRD_DEPS.MK)
 
-
-# Load Dependencies
-$(call bowerbird::git-dependency, \
-	name=bowerbird-help, \
-	path=$(WORKDIR_DEPS)/bowerbird-help, \
-	url=https://github.com/asikros/make-bowerbird-help.git, \
-	branch=main, \
-	entry=bowerbird.mk)
-
-$(call bowerbird::git-dependency, \
-	name=bowerbird-githooks, \
-	path=$(WORKDIR_DEPS)/bowerbird-githooks, \
-	url=https://github.com/asikros/make-bowerbird-githooks.git, \
-	branch=main, \
-	entry=bowerbird.mk)
+# Bootstrap all dependencies using low-level positional API
+# Override variables are initialized automatically by git-dependency-low-level
+$(call bowerbird::deps::git-dependency-low-level,bowerbird-libs,$(WORKDIR_DEPS)/bowerbird-libs,https://github.com/asikros/make-bowerbird-libs.git,main,,bowerbird.mk)
+$(call bowerbird::deps::git-dependency-low-level,bowerbird-help,$(WORKDIR_DEPS)/bowerbird-help,https://github.com/asikros/make-bowerbird-help.git,main,,bowerbird.mk)
+$(call bowerbird::deps::git-dependency-low-level,bowerbird-githooks,$(WORKDIR_DEPS)/bowerbird-githooks,https://github.com/asikros/make-bowerbird-githooks.git,main,,bowerbird.mk)

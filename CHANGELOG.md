@@ -18,7 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - YYYY-MM-DD
 
 ### Added
+- Added `bowerbird-libs` as a dependency for kwargs support
 ### Changed
+- Converted all dependencies to use low-level API (`bowerbird::deps::git-dependency-low-level`)
 ### Deprecated
 ### Fixed
 ### Security
